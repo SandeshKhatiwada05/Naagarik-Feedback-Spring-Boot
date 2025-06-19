@@ -23,10 +23,10 @@ NaagarikFeedback/
 │   ├── service/                       → Services / business logic
 │   └── NaagarikFeedbackApplication/   → Main Spring Boot application
 ├── frontend/
-│   ├── index.html               → Home page
-│   ├── edit-feedback.html       → Home page
-│   ├── add-feedback.html        → Home page
-│   └── feedback-list.html       → Styling and interactivity
+│   ├── index.html                     → Home page
+│   ├── edit-feedback.html             → Home page
+│   ├── add-feedback.html              → Home page
+│   └── feedback-list.html             → Styling and interactivity
 ```
 🚀 Getting Started:
 
