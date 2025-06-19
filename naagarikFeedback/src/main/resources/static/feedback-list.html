@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Feedback List - Naagarik Feedback Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+          background-color: #f8f9fa;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          color: #333;
+        }
+        header {
+          background-color: #003366;
+          color: white;
+          padding: 10px 20px;
+        }
+        header h1 {
+          font-weight: 700;
+          font-size: 1.8rem;
+          margin: 0;
+        }
+        nav {
+          margin-top: 10px;
+        }
+        nav a {
+          color: white;
+          margin-right: 15px;
+          font-weight: 600;
+          text-decoration: none;
+        }
+        nav a:hover {
+          text-decoration: underline;
+        }
+        main {
+          margin: 40px auto;
+          max-width: 900px;
+          background: white;
+          padding: 30px 40px;
+          border-radius: 5px;
+          box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
+        }
+        main h2 {
+          margin-bottom: 25px;
+          font-weight: 600;
+        }
+        footer {
+          background-color: #003366;
+          color: white;
+          padding: 15px 20px;
+          text-align: center;
+          margin-top: 60px;
+          font-size: 0.9rem;
+        }
+        .btn-primary {
+          background-color: #004085;
+          border-color: #004085;
+        }
+        .btn-primary:hover {
+          background-color: #002752;
+          border-color: #002752;
+        }
+        .btn-secondary {
+          background-color: #6c757d;
+          border-color: #6c757d;
+        }
+        .btn-secondary:hover {
+          background-color: #545b62;
+          border-color: #545b62;
+        }
+        .btn-danger {
+          background-color: #dc3545;
+          border-color: #dc3545;
+        }
+        .btn-danger:hover {
+          background-color: #a71d2a;
+          border-color: #a71d2a;
+        }
+        .btn-sm {
+          padding: 0.25rem 0.5rem;
+          font-size: 0.875rem;
+          line-height: 1.5;
+          border-radius: 0.2rem;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="d-flex align-items-center">
+        <img src="/images/Nepal-Flag.png" alt="Nepal Flag" width="50" class="me-3" />
+        <h1>Naagarik Feedback Portal</h1>
+    </div>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="add-feedback.html">Add Feedback</a>
+        <a href="feedback-list.html">View Feedbacks</a>
+    </nav>
+</header>
+
+<main>
+    <h2>All Feedbacks</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered" id="feedbackTable">
+            <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Feedback</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <a href="index.html" class="btn btn-secondary">Back</a>
+</main>
+
+<footer>
+    &copy; 2025 Naagarik Feedback Portal. All Rights Reserved.
+</footer>
+
+<script>
+    // Fetch and render feedback data
+    fetch('/feedback/get-feedback')
+      .then(res => {
+        if (!res.ok) throw new Error('Network response was not ok');
+        return res.json();
+      })
+      .then(data => {
+        const tableBody = document.querySelector('#feedbackTable tbody');
+        tableBody.innerHTML = ''; // Clear any existing rows
+        data.forEach(feedback => {
+          tableBody.innerHTML += `
+            <tr>
+              <td>${feedback.id}</td>
+              <td>${feedback.name}</td>
+              <td>${feedback.location}</td>
+              <td>${feedback.feedback}</td>
+              <td>
+                <a href="edit-feedback.html?id=${feedback.id}" class="btn btn-sm btn-primary me-1">Edit</a>
+                <button class="btn btn-sm btn-danger" onclick="deleteFeedback(${feedback.id})">Delete</button>
+              </td>
+            </tr>
+          `;
+        });
+      })
+      .catch(error => {
+        alert('Failed to load feedback list.');
+        console.error('Error fetching feedback:', error);
+      });
+
+    function deleteFeedback(id) {
+      if (confirm("Are you sure you want to delete this feedback?")) {
+        fetch(`/feedback/delete-feedback/${id}`, { method: 'DELETE' })
+          .then(res => {
+            if (res.ok) {
+              alert('Feedback deleted successfully.');
+              window.location.reload();
+            } else {
+              alert('Failed to delete feedback.');
+            }
+          })
+          .catch(() => {
+            alert('Network error. Please try again.');
+          });
+      }
+    }
+</script>
+</body>
+</html>

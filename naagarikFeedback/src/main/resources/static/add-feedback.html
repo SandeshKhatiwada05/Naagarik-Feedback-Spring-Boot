@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Add Feedback - Naagarik Feedback Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+    }
+    header {
+      background-color: #003366;
+      color: white;
+      padding: 10px 20px;
+    }
+    header h1 {
+      font-weight: 700;
+      font-size: 1.8rem;
+      margin: 0;
+    }
+    nav {
+      margin-top: 10px;
+    }
+    nav a {
+      color: white;
+      margin-right: 15px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    main {
+      margin: 40px auto;
+      max-width: 800px;
+      background: white;
+      padding: 30px 40px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
+    }
+    main h2 {
+      margin-bottom: 25px;
+      font-weight: 600;
+    }
+    footer {
+      background-color: #003366;
+      color: white;
+      padding: 15px 20px;
+      text-align: center;
+      margin-top: 60px;
+      font-size: 0.9rem;
+    }
+    .btn-primary {
+      background-color: #004085;
+      border-color: #004085;
+    }
+    .btn-primary:hover {
+      background-color: #002752;
+      border-color: #002752;
+    }
+    .btn-secondary {
+      background-color: #6c757d;
+      border-color: #6c757d;
+    }
+    .btn-secondary:hover {
+      background-color: #545b62;
+      border-color: #545b62;
+    }
+    .btn-success {
+      background-color: #198754;
+      border-color: #198754;
+    }
+    .btn-success:hover {
+      background-color: #145c32;
+      border-color: #145c32;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="d-flex align-items-center">
+    <img src="/images/Nepal-Flag.png" alt="Nepal Flag" width="50" class="me-3" />
+    <h1>Naagarik Feedback Portal</h1>
+  </div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="add-feedback.html">Add Feedback</a>
+    <a href="feedback-list.html">View Feedbacks</a>
+  </nav>
+</header>
+
+<main>
+  <h2>Add Feedback</h2>
+  <form id="feedbackForm" novalidate>
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      <input type="text" id="name" class="form-control" required />
+    </div>
+    <div class="mb-3">
+      <label for="location" class="form-label">Location</label>
+      <input type="text" id="location" class="form-control" required />
+    </div>
+    <div class="mb-3">
+      <label for="feedback" class="form-label">Feedback</label>
+      <textarea id="feedback" class="form-control" rows="4" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-success me-2">Submit</button>
+    <a href="index.html" class="btn btn-secondary">Back</a>
+  </form>
+</main>
+
+<footer>
+  &copy; 2025 Naagarik Feedback Portal. All Rights Reserved.
+</footer>
+
+<script>
+  document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Basic validation check
+    const name = document.getElementById('name').value.trim();
+    const location = document.getElementById('location').value.trim();
+    const feedback = document.getElementById('feedback').value.trim();
+
+    if (!name || !location || !feedback) {
+      alert('Please fill in all fields.');
+      return;
+    }
+
+    fetch('/feedback/add-feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, location, feedback })
+    }).then(response => {
+      if (response.ok) {
+        alert("Feedback submitted!");
+        window.location.href = 'feedback-list.html';
+      } else {
+        alert("Error submitting feedback.");
+      }
+    }).catch(() => {
+      alert("Network error, please try again later.");
+    });
+  });
+</script>
+</body>
+</html>
