@@ -17,15 +17,16 @@ Naagarik Feedback System is a web-based platform where citizens 🧑‍🤝‍�
 ```
 NaagarikFeedback/
 ├── backend/
-│   ├── config/         → Security configuration
-│   ├── controller/     → Admin, User, Public, and Feedback controllers
-│   ├── entity/         → User and Feedback entities
-│   ├── repository/     → Spring Data JPA repositories
-│   └── application/    → Main Spring Boot application
+│   ├── controller/                    → Admin, User, Public, and Feedback controllers
+│   ├── entity/                        → User and Feedback entities
+│   ├── repository/                    → Spring Data JPA repositories
+│   ├── service/                       → Services / business logic
+│   └── NaagarikFeedbackApplication/   → Main Spring Boot application
 ├── frontend/
-│   ├── index.html      → Home page
-│   ├── feedback.html   → Feedback submission form
-│   └── css/ js/        → Styling and interactivity
+│   ├── index.html               → Home page
+│   ├── edit-feedback.html       → Home page
+│   ├── add-feedback.html        → Home page
+│   └── feedback-list.html       → Styling and interactivity
 ```
 🚀 Getting Started:
 
