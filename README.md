@@ -14,6 +14,7 @@ Naagarik Feedback System is a web-based platform where citizens 🧑‍🤝‍�
 - 🔄 REST API for frontend-backend interaction
 
 📁 Project Structure:
+```
 NaagarikFeedback/
 ├── backend/
 │   ├── config/         → Security configuration
@@ -25,7 +26,7 @@ NaagarikFeedback/
 │   ├── index.html      → Home page
 │   ├── feedback.html   → Feedback submission form
 │   └── css/ js/        → Styling and interactivity
-
+```
 🚀 Getting Started:
 
 🔧 Backend Setup:
