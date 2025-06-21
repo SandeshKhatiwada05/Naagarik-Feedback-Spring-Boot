@@ -44,6 +44,10 @@ NaagarikFeedback/
 1. Open `frontend/index.html` in your browser
 2. Make sure the API URLs match your backend configuration
 
+📷 Screenshots
+![index](https://github.com/user-attachments/assets/b198d391-407a-4b9d-b924-f5246761031c)
+
+
 💬 Feedback & Contribution:
 If you'd like to suggest improvements or report bugs 🐞, feel free to open an issue or pull request!
 
