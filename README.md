@@ -13,7 +13,7 @@ Naagarik Feedback System is a web-based platform where citizens 🧑‍🤝‍�
 - 🔐 Role-based access control (User/Admin)
 - 🔄 REST API for frontend-backend interaction
 
-📁 Project Structure:
+📁 Project Structure: 
 ```
 NaagarikFeedback/
 ├── backend/
