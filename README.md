@@ -55,4 +55,4 @@ If you'd like to suggest improvements or report bugs 🐞, feel free to open an 
 
 ---
 
-👨‍💻 Made with passion by Sandesh Khatiwada 💻
+👨‍💻 Made by Sandesh Khatiwada 💻
