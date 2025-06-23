@@ -1,4 +1,4 @@
-📢 Naagarik Feedback System
+![create](https://github.com/user-attachments/assets/533b7052-ec12-4d54-be73-e08fe4a8531c)📢 Naagarik Feedback System
 
 Naagarik Feedback System is a web-based platform where citizens 🧑‍🤝‍🧑 can provide feedback directly to the government 🏛️. It promotes transparency, civic engagement, and helps authorities receive suggestions, complaints, or appreciations from the public.
 
@@ -46,7 +46,8 @@ NaagarikFeedback/
 
 📷 Screenshots
 ![index](https://github.com/user-attachments/assets/b198d391-407a-4b9d-b924-f5246761031c)
-![index](https://github.com/user-attachments/assets/b2352afa-87af-406c-a2b5-1d55aa4b059f)
+![create](https://github.com/user-attachments/assets/5751948d-91dd-4356-a44a-badb5ce440da)
+
 
 
 
