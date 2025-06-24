@@ -46,7 +46,7 @@ NaagarikFeedback/
 
 📷 Screenshots
 ![index](https://github.com/user-attachments/assets/b198d391-407a-4b9d-b924-f5246761031c)
-
+![create](https://github.com/user-attachments/assets/d723e8c0-274e-43ca-a7cb-0fd01b7e5fe5)
 
 
 
