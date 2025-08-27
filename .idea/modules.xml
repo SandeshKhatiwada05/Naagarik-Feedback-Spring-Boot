@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/naagarikFeedback.iml" filepath="$PROJECT_DIR$/.idea/naagarikFeedback.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Naagarik-Feedback-Spring-Boot-CRUD.iml" filepath="$PROJECT_DIR$/.idea/Naagarik-Feedback-Spring-Boot-CRUD.iml" />
+      <module fileurl="file://$PROJECT_DIR$/naagarikFeedback/naagarikFeedback.iml" filepath="$PROJECT_DIR$/naagarikFeedback/naagarikFeedback.iml" />
     </modules>
   </component>
 </project>
