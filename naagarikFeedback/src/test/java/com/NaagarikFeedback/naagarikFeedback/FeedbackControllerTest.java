@@ -30,13 +30,19 @@ public class FeedbackControllerTest {
 
     @Test
     public void testGetAllFeedback() throws Exception {
+        FeedbackEntity f = new FeedbackEntity();
+        f.setName("Sandesh");
+        f.setFeedback("Good Work!");
+        f.setLocation("Kathmandu");
+
         Mockito.when(feedbackService.getAllFeedback())
-                .thenReturn(Arrays.asList(new FeedbackEntity("Sandesh", "Good Work!", "Kathmandu")));
+                .thenReturn(Arrays.asList(f));
 
         mockMvc.perform(get("/feedback/get-feedback"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("Sandesh"));
     }
+
 
     @Test
     public void testAddFeedback() throws Exception {

@@ -1,10 +1,10 @@
+package com.NaagarikFeedback.naagarikFeedback;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -14,15 +14,15 @@ public class FeedbackSeleniumTest {
 
     @BeforeAll
     public static void setup() {
-        // Make sure you have chromedriver in PATH
-        driver = new ChromeDriver();
+        // No manual driver download needed if Edge is installed
+        driver = new EdgeDriver();
     }
 
     @Test
     public void testHomePageLoads() {
-        driver.get("http://localhost:8080/feedback/get-feedback"); // Adjust if frontend exists
+        driver.get("http://localhost:8080/feedback/get-feedback");
         String pageSource = driver.getPageSource();
-        assertTrue(pageSource.contains("[")); // crude check: JSON array present
+        assertTrue(pageSource.contains("["));
     }
 
     @AfterAll
