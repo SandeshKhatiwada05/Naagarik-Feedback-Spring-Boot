@@ -51,7 +51,7 @@ public class FeedbackControllerTest {
         String feedbackJson = """
             {
               "name": "Sandesh",
-              "feedback": "Unmanaged Road!",
+              "feedback": "Water issue in Kathmandu",
               "location": "Kathmandu"
             }
         """;
