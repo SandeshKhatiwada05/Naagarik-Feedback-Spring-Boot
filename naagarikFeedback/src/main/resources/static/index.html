@@ -150,32 +150,45 @@
             backdrop-filter: blur(2px);
         }
 
-        .hero-controls {
+        /* New: Left/Right centered nav buttons, slightly larger */
+        .hero-nav {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
             z-index: 5;
+            height: 48px;
+            width: 48px;
+            border-radius: 9999px;
             display: flex;
-            gap: 8px;
-        }
-        .hero-controls button {
+            align-items: center;
+            justify-content: center;
             appearance: none;
             border: 0;
-            border-radius: 6px;
-            padding: 6px 10px;
-            font-size: 16px;
-            font-weight: 700;
-            line-height: 1;
             color: #fff;
             background: rgba(0,0,0,0.45);
+            font-size: 28px; /* slightly larger */
+            font-weight: 700;
+            line-height: 1;
             cursor: pointer;
-            transition: background 0.2s ease;
+            transition: background 0.2s ease, transform 0.1s ease;
         }
-        .hero-controls button:hover,
-        .hero-controls button:focus {
+        .hero-nav:hover,
+        .hero-nav:focus {
             background: rgba(0,0,0,0.65);
             outline: 2px solid rgba(255,255,255,0.35);
             outline-offset: 2px;
+        }
+        .hero-prev { left: 12px; }
+        .hero-next { right: 12px; }
+
+        @media (max-width: 768px) {
+            .hero-nav {
+                height: 44px;
+                width: 44px;
+                font-size: 24px;
+            }
+            .hero-prev { left: 8px; }
+            .hero-next { right: 8px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -301,10 +314,10 @@
 <!-- Hero slideshow using your Google-sourced image URLs -->
 <section class="hero" aria-label="Scenic Nepal images">
     <div class="hero-slideshow" id="heroSlideshow">
-        <div class="hero-controls" aria-label="Slideshow controls">
-            <button id="prevSlide" type="button" aria-label="Previous image" title="Previous">‹</button>
-            <button id="nextSlide" type="button" aria-label="Next image" title="Next">›</button>
-        </div>
+        <!-- New: centered prev/next buttons on left/right edges -->
+        <button id="prevSlide" type="button" class="hero-nav hero-prev" aria-label="Previous image" title="Previous">‹</button>
+        <button id="nextSlide" type="button" class="hero-nav hero-next" aria-label="Next image" title="Next">›</button>
+
         <div class="hero-credit" id="heroCredit" aria-hidden="true"></div>
         <!-- Slides are injected by JS from the URLs you provided -->
     </div>
