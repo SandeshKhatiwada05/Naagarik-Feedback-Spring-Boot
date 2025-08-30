@@ -105,9 +105,7 @@
         nav a:hover, nav a.active { border-bottom: 3px solid #ffcc00; color: #ffcc00; }
 
         /* Hero slideshow */
-        .hero {
-            background: transparent;
-        }
+        .hero { background: transparent; }
         .hero-slideshow {
             max-width: 1200px;
             margin: 20px auto 0;
@@ -129,12 +127,23 @@
         }
         .hero-slideshow .slide.active { opacity: 1; }
         .hero-slideshow::after {
-            /* subtle gradient overlay for contrast */
             content: "";
             position: absolute;
             inset: 0;
             background: linear-gradient(to bottom, rgba(0,0,0,0.08), rgba(0,0,0,0.15));
             pointer-events: none;
+        }
+        .hero-credit {
+            position: absolute;
+            right: 10px;
+            bottom: 8px;
+            z-index: 2;
+            background: rgba(0,0,0,0.45);
+            color: #fff;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            backdrop-filter: blur(2px);
         }
         @media (prefers-reduced-motion: reduce) {
             .hero-slideshow .slide { transition: none; }
@@ -149,7 +158,7 @@
             border-radius: 8px;
             box-shadow: 0 4px 15px rgb(0 0 0 / 0.1);
             text-align: center;
-            flex: 1; /* take remaining space so footer stays at bottom */
+            flex: 1; /* keep footer at bottom */
         }
         main h2 {
             font-weight: 700;
@@ -205,7 +214,7 @@
             margin-top: auto; /* stick to bottom */
         }
 
-        /* Responsive tweaks */
+        /* Responsive */
         @media (max-width: 768px) {
             .header-container, .nav-container {
                 flex-direction: column;
@@ -256,14 +265,11 @@
     </div>
 </nav>
 
-<!-- Hero slideshow with Nepal images -->
+<!-- Hero slideshow using your Google-sourced image URLs -->
 <section class="hero" aria-label="Scenic Nepal images">
     <div class="hero-slideshow" id="heroSlideshow">
-        <!-- Replace image paths with your own Nepal images inside /images/ -->
-        <img class="slide active" src="/images/nepal-himalayas.jpg" alt="Snow-capped Himalayas in Nepal" />
-        <img class="slide" src="/images/nepal-pokhara-fewa-lake.jpg" alt="Phewa Lake in Pokhara reflecting Annapurna range" />
-        <img class="slide" src="/images/nepal-boudhanath-stupa.jpg" alt="Boudhanath Stupa in Kathmandu" />
-        <img class="slide" src="/images/nepal-pashupatinath.jpg" alt="Pashupatinath Temple complex, Kathmandu" />
+        <div class="hero-credit" id="heroCredit" aria-hidden="true"></div>
+        <!-- Slides are injected by JS from the URLs you provided -->
     </div>
 </section>
 
@@ -288,7 +294,7 @@
             ne: {
                 pageTitle: 'Naagarik Feedback Portal | नागरिक प्रतिक्रिया पोर्टल',
                 topLabel: 'नेपाल सरकार',
-                hdrTitle: 'परराष्ट्र मन्त्रालय',
+                hdrTitle: 'नागरिक मन्त्रालय',
                 hdrSubtitle: 'सिंहदरबार, काठमाडौं',
                 navHome: 'गृह पृष्ठ',
                 navAdd: 'प्रतिक्रिया थप्नुहोस्',
@@ -302,7 +308,7 @@
             en: {
                 pageTitle: 'Naagarik Feedback Portal | Citizen Feedback Portal',
                 topLabel: 'Government of Nepal',
-                hdrTitle: 'Ministry of Foreign Affairs',
+                hdrTitle: 'Ministry of Feedback',
                 hdrSubtitle: 'Singha Durbar, Kathmandu',
                 navHome: 'Home',
                 navAdd: 'Add Feedback',
@@ -315,7 +321,7 @@
             }
         };
 
-        const elements = {
+        const els = {
             topLabel: document.getElementById('topLabel'),
             hdrTitle: document.getElementById('hdrTitle'),
             hdrSubtitle: document.getElementById('hdrSubtitle'),
@@ -338,17 +344,17 @@
             document.documentElement.lang = lang === 'en' ? 'en' : 'ne';
             document.title = t.pageTitle;
 
-            elements.topLabel.textContent = t.topLabel;
-            elements.hdrTitle.textContent = t.hdrTitle;
-            elements.hdrSubtitle.textContent = t.hdrSubtitle;
-            elements.navHome.textContent = t.navHome;
-            elements.navAdd.textContent = t.navAdd;
-            elements.navView.textContent = t.navView;
-            elements.mainHeading.textContent = t.mainHeading;
-            elements.mainPara.textContent = t.mainPara;
-            elements.btnAdd.textContent = t.btnAdd;
-            elements.btnView.textContent = t.btnView;
-            elements.footerText.textContent = t.footerText;
+            els.topLabel.textContent = t.topLabel;
+            els.hdrTitle.textContent = t.hdrTitle;
+            els.hdrSubtitle.textContent = t.hdrSubtitle;
+            els.navHome.textContent = t.navHome;
+            els.navAdd.textContent = t.navAdd;
+            els.navView.textContent = t.navView;
+            els.mainHeading.textContent = t.mainHeading;
+            els.mainPara.textContent = t.mainPara;
+            els.btnAdd.textContent = t.btnAdd;
+            els.btnView.textContent = t.btnView;
+            els.footerText.textContent = t.footerText;
 
             if (lang === 'en') {
                 langEng.classList.add('active');
@@ -382,12 +388,49 @@
         // Initialize language on first load
         initLang();
 
-        // Lightweight slideshow (auto changes every 2 seconds)
-        (function initSlideshow() {
-            const slides = document.querySelectorAll('#heroSlideshow .slide');
-            if (!slides || slides.length <= 1) return;
+        // Hero slideshow - using your Google result image URLs (decoded to direct image links)
+        const imageUrls = [
+            'https://images.travelandleisureasia.com/wp-content/uploads/sites/3/2023/12/29122131/pokhra-1-1600x900.jpeg',
+            'https://www.gokitetours.com/wp-content/uploads/2024/12/10-Beautiful-Places-to-Visit-in-Nepal-on-Your-Next-Vacation.webp',
+            'https://images.squarespace-cdn.com/content/v1/609d3f1781f4a87463f238cb/1692302796055-97BM3S7YLYKRR1DEI2DS/image-asset.jpeg',
+            'https://media.nepalhighlandtreks.com/uploads/media/featured-2.jpg',
+            'https://thumbs.dreamstime.com/b/mountain-lake-beautiful-sunset-gosaikunda-nepal-over-snow-covered-mountains-frozen-landscape-view-trekking-route-langtang-61315510.jpg',
+            'https://basecampadventure.com/wp-content/uploads/2018/07/Kathmandu-Chitwan-Pokhara-Tours-IV-1290x540.jpg',
+            'https://www.ambitionhimalaya.com/wp-content/uploads/2024/05/View-of-Nagarkot.webp'
+        ];
 
-            // Respect user motion preference
+        const hero = document.getElementById('heroSlideshow');
+        const credit = document.getElementById('heroCredit');
+
+        // Inject slides and preload
+        const slides = [];
+        imageUrls.forEach((src, i) => {
+            const img = new Image();
+            img.className = 'slide' + (i === 0 ? ' active' : '');
+            img.alt = 'Scenic Nepal view';
+            img.referrerPolicy = 'no-referrer'; // reduce referrer leakage to some hosts
+            img.src = src;
+            hero.appendChild(img);
+            slides.push(img);
+
+            // Preload next image
+            const pre = new Image();
+            pre.src = src;
+        });
+
+        function setCreditFromUrl(urlStr) {
+            try {
+                const u = new URL(urlStr);
+                credit.textContent = 'Image: ' + u.hostname.replace('www.', '');
+            } catch {
+                credit.textContent = '';
+            }
+        }
+        if (slides.length) setCreditFromUrl(slides[0].src);
+
+        // Auto-rotate every 2 seconds (respect prefers-reduced-motion)
+        (function initSlideshow() {
+            if (!slides || slides.length <= 1) return;
             const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             if (prefersReducedMotion) return;
 
@@ -396,7 +439,8 @@
                 slides[index].classList.remove('active');
                 index = (index + 1) % slides.length;
                 slides[index].classList.add('active');
-            }, 2000); // 2 seconds
+                setCreditFromUrl(slides[index].src);
+            }, 2000);
         })();
     })();
 </script>
