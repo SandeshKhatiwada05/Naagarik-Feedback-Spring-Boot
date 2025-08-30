@@ -92,11 +92,10 @@
       color: #ffcc00;
     }
 
-    /* UNIQUE SIDE SLIDESHOW LAYOUT (fills left/right blank space) */
+    /* Split panorama side rails + form grid */
     .main-layout {
-      /* 3-column grid: left rail | form | right rail */
       display: grid;
-      grid-template-columns: clamp(120px, 18vw, 260px) minmax(320px, 900px) clamp(120px, 18vw, 260px);
+      grid-template-columns: clamp(140px, 18vw, 280px) minmax(320px, 900px) clamp(140px, 18vw, 280px);
       gap: 18px;
       align-items: start;
       width: min(98vw, 1400px);
@@ -108,10 +107,9 @@
       border-radius: 12px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.12);
       background: linear-gradient(135deg, #dfe9f3 0%, #ffffff 100%);
-      min-height: 400px; /* will be synced to form height by JS */
+      min-height: 400px; /* synced to form height by JS */
       isolation: isolate;
     }
-    /* Faint decorative grid overlay to make it unique */
     .side-rail::after {
       content: "";
       position: absolute;
@@ -123,7 +121,6 @@
       pointer-events: none;
       z-index: 3;
     }
-    /* Subtle vignette for contrast */
     .side-rail::before {
       content: "";
       position: absolute;
@@ -133,31 +130,32 @@
       z-index: 2;
     }
 
-    /* Crossfade Ken Burns slides inside rails */
+    /* Each slide is a DIV with background image sized to 200% width.
+       Left rail shows left half, right rail shows right half, making a complete panorama across both sides. */
     .rail-slide {
       position: absolute;
       inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
       opacity: 0;
       transition: opacity 0.9s ease-in-out;
+      background-repeat: no-repeat;
+      background-size: 200% 100%; /* show exactly half per rail */
       transform-origin: center;
     }
+    .side-rail.left .rail-slide { background-position: left center; transform-origin: left center; }
+    .side-rail.right .rail-slide { background-position: right center; transform-origin: right center; }
     .rail-slide.active {
       opacity: 1;
       z-index: 1;
-      animation: kenburns 6s ease-in-out both;
+      animation: kbZoom 6s ease-in-out both;
     }
-    @keyframes kenburns {
-      0% { transform: scale(1.06) translate3d(0, 0, 0); }
-      100% { transform: scale(1.12) translate3d(0, 0, 0); }
+    @keyframes kbZoom {
+      0%   { transform: scale(1.02); }
+      100% { transform: scale(1.08); }
     }
     @media (prefers-reduced-motion: reduce) {
       .rail-slide { transition: none; animation: none !important; }
     }
 
-    /* Small credit chip */
     .rail-credit {
       position: absolute;
       left: 10px;
@@ -170,8 +168,6 @@
       border-radius: 4px;
       backdrop-filter: blur(2px);
     }
-
-    /* Pause on hover hint */
     .rail-hint {
       position: absolute;
       right: 10px;
@@ -279,10 +275,10 @@
   </div>
 </nav>
 
-<!-- 3-column layout: Left slideshow | Form | Right slideshow -->
+<!-- 3-column layout: Left slideshow half | Form | Right slideshow half -->
 <div class="main-layout">
-  <!-- Left unique slideshow rail -->
-  <aside class="side-rail" id="railLeft" aria-label="Scenic Nepal images left rail">
+  <!-- Left panorama half -->
+  <aside class="side-rail left" id="railLeft" aria-label="Scenic Nepal images left rail">
     <div class="rail-hint">Hover to pause</div>
     <div class="rail-credit" id="leftCredit"></div>
     <!-- slides injected by JS -->
@@ -319,8 +315,8 @@
     </form>
   </main>
 
-  <!-- Right unique slideshow rail -->
-  <aside class="side-rail" id="railRight" aria-label="Scenic Nepal images right rail">
+  <!-- Right panorama half -->
+  <aside class="side-rail right" id="railRight" aria-label="Scenic Nepal images right rail">
     <div class="rail-hint">Hover to pause</div>
     <div class="rail-credit" id="rightCredit"></div>
     <!-- slides injected by JS -->
@@ -415,7 +411,6 @@
       btnBack: document.getElementById('btnBack'),
       footerText: document.getElementById('footerText'),
       form: document.getElementById('feedbackForm'),
-      mainLayout: document.querySelector('.main-layout'),
       centerCard: document.querySelector('main.form-card'),
       railLeft: document.getElementById('railLeft'),
       railRight: document.getElementById('railRight'),
@@ -515,7 +510,6 @@
 
       if (!valid) return;
 
-      // Disable submit
       els.btnSubmit.disabled = true;
       const oldText = els.btnSubmit.textContent;
       els.btnSubmit.textContent = tr.btnSubmitting;
@@ -538,7 +532,7 @@
               });
     });
 
-    // UNIQUE SIDE RAIL SLIDESHOWS (independent crossfade + Ken Burns, 3s each)
+    // Split panorama slideshow (left/right halves from the same image), 3s per image
     const imageUrls = [
       'https://images.travelandleisureasia.com/wp-content/uploads/sites/3/2023/12/29122131/pokhra-1-1600x900.jpeg',
       'https://www.gokitetours.com/wp-content/uploads/2024/12/10-Beautiful-Places-to-Visit-in-Nepal-on-Your-Next-Vacation.webp',
@@ -549,62 +543,67 @@
       'https://www.ambitionhimalaya.com/wp-content/uploads/2024/05/View-of-Nagarkot.webp'
     ];
 
+    const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     function hostName(u) {
       try { return new URL(u).hostname.replace(/^www\./,''); } catch { return ''; }
     }
 
-    function buildRail(railEl, creditEl, offset = 0) {
-      const slides = [];
-      imageUrls.forEach((src, i) => {
-        const img = new Image();
-        img.className = 'rail-slide' + ((i === offset % imageUrls.length) ? ' active' : '');
-        img.src = src;
-        img.alt = 'Scenic Nepal view';
-        img.referrerPolicy = 'no-referrer';
-        railEl.appendChild(img);
-        slides.push(img);
-        // preload
-        const pre = new Image(); pre.src = src;
-      });
+    // Build paired slides (same index on left/right), each shows half via background-size: 200%
+    const leftSlides = [], rightSlides = [];
+    imageUrls.forEach((src, i) => {
+      const l = document.createElement('div');
+      l.className = 'rail-slide';
+      l.style.backgroundImage = `url("${src}")`;
+      els.railLeft.appendChild(l);
+      leftSlides.push(l);
 
-      // init credit
-      const active = slides.find(s => s.classList.contains('active')) || slides[0];
-      if (active && creditEl) creditEl.textContent = 'Image: ' + hostName(active.src);
+      const r = document.createElement('div');
+      r.className = 'rail-slide';
+      r.style.backgroundImage = `url("${src}")`;
+      els.railRight.appendChild(r);
+      rightSlides.push(r);
 
-      let idx = slides.indexOf(active);
-      let timer = null;
+      const pre = new Image(); pre.src = src; // preload
+    });
 
-      const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      function show(n) {
-        slides[idx].classList.remove('active');
-        idx = (n + slides.length) % slides.length;
-        slides[idx].classList.add('active');
-        if (creditEl) creditEl.textContent = 'Image: ' + hostName(slides[idx].src);
-      }
-      function next() { show(idx + 1); }
-      function start() {
-        stop();
-        if (!prefersReducedMotion) timer = setInterval(next, 3000); // 3s per image
-      }
-      function stop() { if (timer) { clearInterval(timer); timer = null; } }
-
-      railEl.addEventListener('mouseenter', stop);
-      railEl.addEventListener('mouseleave', start);
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) stop(); else start();
-      });
-
-      start();
-      return { start, stop, resize: ()=>{} };
+    let idx = 0;
+    function setActive(i) {
+      leftSlides[idx]?.classList.remove('active');
+      rightSlides[idx]?.classList.remove('active');
+      idx = (i + leftSlides.length) % leftSlides.length;
+      leftSlides[idx].classList.add('active');
+      rightSlides[idx].classList.add('active');
+      els.leftCredit.textContent = 'Image: ' + hostName(imageUrls[idx]);
+      els.rightCredit.textContent = 'Image: ' + hostName(imageUrls[idx]);
     }
 
-    // Keep side rails height matched to center form card for a clean edge-to-edge look
+    if (leftSlides.length) setActive(0);
+
+    let timer = null;
+    function start() {
+      stop();
+      if (!prefersReducedMotion && leftSlides.length > 1) {
+        timer = setInterval(() => setActive(idx + 1), 3000);
+      }
+    }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+
+    els.railLeft.addEventListener('mouseenter', stop);
+    els.railRight.addEventListener('mouseenter', stop);
+    els.railLeft.addEventListener('mouseleave', start);
+    els.railRight.addEventListener('mouseleave', start);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop(); else start();
+    });
+    start();
+
+    // Match rail heights to form for a clean edge-to-edge look
     function syncRailHeights() {
       const h = els.centerCard.offsetHeight;
       els.railLeft.style.height = h + 'px';
       els.railRight.style.height = h + 'px';
     }
-    // Debounce resize
     let rAF = null;
     function onResize() {
       if (rAF) cancelAnimationFrame(rAF);
@@ -612,10 +611,6 @@
     }
     window.addEventListener('load', syncRailHeights);
     window.addEventListener('resize', onResize);
-
-    // Build both rails with different starting offsets (so they don't sync)
-    buildRail(els.railLeft, els.leftCredit, 0);
-    buildRail(els.railRight, els.rightCredit, 2);
   })();
 </script>
 
