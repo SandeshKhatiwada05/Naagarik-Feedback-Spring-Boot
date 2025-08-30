@@ -45,8 +45,12 @@ NaagarikFeedback/
 2. Make sure the API URLs match your backend configuration
 
 📷 Screenshots
-![index](https://github.com/user-attachments/assets/b198d391-407a-4b9d-b924-f5246761031c)
-![create](https://github.com/user-attachments/assets/d723e8c0-274e-43ca-a7cb-0fd01b7e5fe5)
+<img width="1899" height="966" alt="Screenshot 2025-08-30 201230" src="https://github.com/user-attachments/assets/56d38d3f-1fa2-410c-9d12-fed10c417018" />
+<img width="1637" height="869" alt="Screenshot 2025-08-30 201328" src="https://github.com/user-attachments/assets/ac122197-5f02-4ce7-9a28-65c5d2c31f85" />
+<img width="1915" height="949" alt="Screenshot 2025-08-30 201343" src="https://github.com/user-attachments/assets/20086103-330b-4e35-9901-b437935304a1" />
+<img width="1668" height="844" alt="Screenshot 2025-08-30 201412" src="https://github.com/user-attachments/assets/00ae6c58-8b16-4ec8-a052-d7cc11ce2268" />
+<img width="1376" height="854" alt="Screenshot 2025-08-30 201431" src="https://github.com/user-attachments/assets/9dcdf4db-3c9f-4b59-b929-57a314dd0e75" />
+
 
 
 
