@@ -123,9 +123,12 @@
             height: 100%;
             object-fit: cover;
             opacity: 0;
-            transition: opacity 1s ease-in-out;
+            transition: opacity 0.8s ease-in-out;
         }
-        .hero-slideshow .slide.active { opacity: 1; }
+        .hero-slideshow .slide.prev { opacity: 0.22; z-index: 2; }
+        .hero-slideshow .slide.active { opacity: 1; z-index: 3; }
+        .hero-slideshow .slide.next { opacity: 0.22; z-index: 2; }
+
         .hero-slideshow::after {
             content: "";
             position: absolute;
@@ -133,11 +136,12 @@
             background: linear-gradient(to bottom, rgba(0,0,0,0.08), rgba(0,0,0,0.15));
             pointer-events: none;
         }
+
         .hero-credit {
             position: absolute;
             right: 10px;
             bottom: 8px;
-            z-index: 2;
+            z-index: 4;
             background: rgba(0,0,0,0.45);
             color: #fff;
             font-size: 12px;
@@ -145,6 +149,35 @@
             border-radius: 4px;
             backdrop-filter: blur(2px);
         }
+
+        .hero-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 5;
+            display: flex;
+            gap: 8px;
+        }
+        .hero-controls button {
+            appearance: none;
+            border: 0;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1;
+            color: #fff;
+            background: rgba(0,0,0,0.45);
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .hero-controls button:hover,
+        .hero-controls button:focus {
+            background: rgba(0,0,0,0.65);
+            outline: 2px solid rgba(255,255,255,0.35);
+            outline-offset: 2px;
+        }
+
         @media (prefers-reduced-motion: reduce) {
             .hero-slideshow .slide { transition: none; }
         }
@@ -268,6 +301,10 @@
 <!-- Hero slideshow using your Google-sourced image URLs -->
 <section class="hero" aria-label="Scenic Nepal images">
     <div class="hero-slideshow" id="heroSlideshow">
+        <div class="hero-controls" aria-label="Slideshow controls">
+            <button id="prevSlide" type="button" aria-label="Previous image" title="Previous">‹</button>
+            <button id="nextSlide" type="button" aria-label="Next image" title="Next">›</button>
+        </div>
         <div class="hero-credit" id="heroCredit" aria-hidden="true"></div>
         <!-- Slides are injected by JS from the URLs you provided -->
     </div>
@@ -404,16 +441,16 @@
 
         // Inject slides and preload
         const slides = [];
-        imageUrls.forEach((src, i) => {
+        imageUrls.forEach((src) => {
             const img = new Image();
-            img.className = 'slide' + (i === 0 ? ' active' : '');
+            img.className = 'slide';
             img.alt = 'Scenic Nepal view';
             img.referrerPolicy = 'no-referrer'; // reduce referrer leakage to some hosts
             img.src = src;
             hero.appendChild(img);
             slides.push(img);
 
-            // Preload next image
+            // Preload
             const pre = new Image();
             pre.src = src;
         });
@@ -426,22 +463,98 @@
                 credit.textContent = '';
             }
         }
-        if (slides.length) setCreditFromUrl(slides[0].src);
 
-        // Auto-rotate every 2 seconds (respect prefers-reduced-motion)
-        (function initSlideshow() {
-            if (!slides || slides.length <= 1) return;
-            const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            if (prefersReducedMotion) return;
+        // Slideshow state
+        let current = 0;
+        let timer = null;
 
-            let index = 0;
-            setInterval(() => {
-                slides[index].classList.remove('active');
-                index = (index + 1) % slides.length;
-                slides[index].classList.add('active');
-                setCreditFromUrl(slides[index].src);
-            }, 2000);
-        })();
+        function applyClasses() {
+            const n = slides.length;
+            const prev = (current - 1 + n) % n;
+            const next = (current + 1) % n;
+
+            for (let i = 0; i < n; i++) {
+                slides[i].classList.remove('prev', 'active', 'next');
+            }
+            slides[prev].classList.add('prev');
+            slides[current].classList.add('active');
+            slides[next].classList.add('next');
+
+            setCreditFromUrl(slides[current].src);
+        }
+
+        function nextSlide() {
+            current = (current + 1) % slides.length;
+            applyClasses();
+        }
+
+        function prevSlide() {
+            current = (current - 1 + slides.length) % slides.length;
+            applyClasses();
+        }
+
+        function startTimer() {
+            stopTimer();
+            // 3 seconds per slide
+            timer = setInterval(nextSlide, 3000);
+        }
+
+        function stopTimer() {
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
+        }
+
+        // Respect prefers-reduced-motion
+        const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (slides.length) {
+            applyClasses();
+            if (!prefersReducedMotion) startTimer();
+        }
+
+        // Controls: buttons, hover pause, keyboard
+        const btnPrev = document.getElementById('prevSlide');
+        const btnNext = document.getElementById('nextSlide');
+
+        function userPrev() {
+            prevSlide();
+            if (!prefersReducedMotion) startTimer(); // reset timer
+        }
+        function userNext() {
+            nextSlide();
+            if (!prefersReducedMotion) startTimer(); // reset timer
+        }
+
+        btnPrev.addEventListener('click', userPrev);
+        btnNext.addEventListener('click', userNext);
+
+        hero.addEventListener('mouseenter', () => { if (!prefersReducedMotion) stopTimer(); });
+        hero.addEventListener('mouseleave', () => { if (!prefersReducedMotion) startTimer(); });
+
+        // Pause when controls focused (keyboard nav), resume on blur
+        btnPrev.addEventListener('focus', () => { if (!prefersReducedMotion) stopTimer(); });
+        btnNext.addEventListener('focus', () => { if (!prefersReducedMotion) stopTimer(); });
+        btnPrev.addEventListener('blur', () => { if (!prefersReducedMotion) startTimer(); });
+        btnNext.addEventListener('blur', () => { if (!prefersReducedMotion) startTimer(); });
+
+        // Keyboard arrows for convenience
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                userPrev();
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                userNext();
+            }
+        });
+
+        // Pause when tab is hidden to save resources
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) stopTimer();
+            else if (!prefersReducedMotion) startTimer();
+        });
     })();
 </script>
 
