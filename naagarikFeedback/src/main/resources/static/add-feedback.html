@@ -92,21 +92,112 @@
       color: #ffcc00;
     }
 
-    /* Main content */
-    main {
-      max-width: 900px;
-      width: 95%;
-      background: white;
+    /* UNIQUE SIDE SLIDESHOW LAYOUT (fills left/right blank space) */
+    .main-layout {
+      /* 3-column grid: left rail | form | right rail */
+      display: grid;
+      grid-template-columns: clamp(120px, 18vw, 260px) minmax(320px, 900px) clamp(120px, 18vw, 260px);
+      gap: 18px;
+      align-items: start;
+      width: min(98vw, 1400px);
       margin: 30px auto 80px;
+    }
+    .side-rail {
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+      background: linear-gradient(135deg, #dfe9f3 0%, #ffffff 100%);
+      min-height: 400px; /* will be synced to form height by JS */
+      isolation: isolate;
+    }
+    /* Faint decorative grid overlay to make it unique */
+    .side-rail::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+              linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px);
+      background-size: 20px 20px, 20px 20px;
+      pointer-events: none;
+      z-index: 3;
+    }
+    /* Subtle vignette for contrast */
+    .side-rail::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0.0) 40%, rgba(0,0,0,0.12) 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Crossfade Ken Burns slides inside rails */
+    .rail-slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.9s ease-in-out;
+      transform-origin: center;
+    }
+    .rail-slide.active {
+      opacity: 1;
+      z-index: 1;
+      animation: kenburns 6s ease-in-out both;
+    }
+    @keyframes kenburns {
+      0% { transform: scale(1.06) translate3d(0, 0, 0); }
+      100% { transform: scale(1.12) translate3d(0, 0, 0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .rail-slide { transition: none; animation: none !important; }
+    }
+
+    /* Small credit chip */
+    .rail-credit {
+      position: absolute;
+      left: 10px;
+      bottom: 10px;
+      z-index: 4;
+      background: rgba(0,0,0,0.45);
+      color: #fff;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      backdrop-filter: blur(2px);
+    }
+
+    /* Pause on hover hint */
+    .rail-hint {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      z-index: 4;
+      font-size: 11px;
+      color: rgba(255,255,255,0.9);
+      background: rgba(0,0,0,0.35);
+      padding: 2px 6px;
+      border-radius: 999px;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    /* Form card */
+    main.form-card {
+      background: white;
       padding: 30px 40px;
-      border-radius: 8px;
+      border-radius: 12px;
       box-shadow: 0 4px 15px rgb(0 0 0 / 0.1);
-      flex: 1;
     }
     main h2 {
       margin-bottom: 20px;
       font-weight: 700;
       color: #004080;
+      text-align: center;
     }
 
     /* Buttons */
@@ -131,7 +222,7 @@
     .btn-success:hover { background-color: #145c32; border-color: #145c32; }
 
     /* Help text and validation */
-    .form-text { color: #666; }
+    .form-text { color: #666; text-align: right; }
     .is-invalid + .invalid-feedback { display: block; }
 
     /* Footer */
@@ -146,10 +237,14 @@
     }
 
     /* Responsive */
-    @media (max-width: 768px) {
-      .header-container { flex-direction: column; align-items: center; gap: 12px; }
-      .nav-container { flex-direction: column; align-items: center; gap: 12px; }
-      main { padding: 20px; }
+    @media (max-width: 992px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+        width: min(95vw, 900px);
+        gap: 12px;
+      }
+      .side-rail { display: none; }
+      main.form-card { padding: 24px; }
     }
   </style>
 </head>
@@ -184,35 +279,53 @@
   </div>
 </nav>
 
-<main>
-  <h2 id="pageHeading">प्रतिक्रिया थप्नुहोस्</h2>
+<!-- 3-column layout: Left slideshow | Form | Right slideshow -->
+<div class="main-layout">
+  <!-- Left unique slideshow rail -->
+  <aside class="side-rail" id="railLeft" aria-label="Scenic Nepal images left rail">
+    <div class="rail-hint">Hover to pause</div>
+    <div class="rail-credit" id="leftCredit"></div>
+    <!-- slides injected by JS -->
+  </aside>
 
-  <form id="feedbackForm" novalidate>
-    <div class="mb-3">
-      <label for="name" class="form-label" id="lblName">नाम</label>
-      <input type="text" id="name" class="form-control" required />
-      <div class="invalid-feedback" id="errName">कृपया नाम लेख्नुहोस्।</div>
-    </div>
+  <!-- Form card (center) -->
+  <main class="form-card">
+    <h2 id="pageHeading">प्रतिक्रिया थप्नुहोस्</h2>
 
-    <div class="mb-3">
-      <label for="location" class="form-label" id="lblLocation">ठेगाना</label>
-      <input type="text" id="location" class="form-control" required />
-      <div class="invalid-feedback" id="errLocation">कृपया ठेगाना लेख्नुहोस्।</div>
-    </div>
+    <form id="feedbackForm" novalidate>
+      <div class="mb-3">
+        <label for="name" class="form-label" id="lblName">नाम</label>
+        <input type="text" id="name" class="form-control" required />
+        <div class="invalid-feedback" id="errName">कृपया नाम लेख्नुहोस्।</div>
+      </div>
 
-    <div class="mb-2">
-      <label for="feedback" class="form-label" id="lblFeedback">प्रतिक्रिया</label>
-      <textarea id="feedback" class="form-control" rows="4" maxlength="500" required></textarea>
-      <div class="invalid-feedback" id="errFeedback">कृपया प्रतिक्रिया लेख्नुहोस्।</div>
-      <div class="form-text" id="feedbackHelp">०/५००</div>
-    </div>
+      <div class="mb-3">
+        <label for="location" class="form-label" id="lblLocation">ठेगाना</label>
+        <input type="text" id="location" class="form-control" required />
+        <div class="invalid-feedback" id="errLocation">कृपया ठेगाना लेख्नुहोस्।</div>
+      </div>
 
-    <div class="mt-3">
-      <button type="submit" class="btn btn-success me-2" id="btnSubmit">पेश गर्नुहोस्</button>
-      <a href="index.html" class="btn btn-secondary" id="btnBack">पछाडि</a>
-    </div>
-  </form>
-</main>
+      <div class="mb-2">
+        <label for="feedback" class="form-label" id="lblFeedback">प्रतिक्रिया</label>
+        <textarea id="feedback" class="form-control" rows="4" maxlength="500" required></textarea>
+        <div class="invalid-feedback" id="errFeedback">कृपया प्रतिक्रिया लेख्नुहोस्।</div>
+        <div class="form-text" id="feedbackHelp">०/५००</div>
+      </div>
+
+      <div class="mt-3 text-center">
+        <button type="submit" class="btn btn-success me-2" id="btnSubmit">पेश गर्नुहोस्</button>
+        <a href="index.html" class="btn btn-secondary" id="btnBack">पछाडि</a>
+      </div>
+    </form>
+  </main>
+
+  <!-- Right unique slideshow rail -->
+  <aside class="side-rail" id="railRight" aria-label="Scenic Nepal images right rail">
+    <div class="rail-hint">Hover to pause</div>
+    <div class="rail-credit" id="rightCredit"></div>
+    <!-- slides injected by JS -->
+  </aside>
+</div>
 
 <footer id="footerText">
   &copy; 2025 नागरिक प्रतिक्रिया पोर्टल | Naagarik Feedback Portal. सबै अधिकार सुरक्षित | All Rights Reserved.
@@ -301,7 +414,13 @@
       btnSubmit: document.getElementById('btnSubmit'),
       btnBack: document.getElementById('btnBack'),
       footerText: document.getElementById('footerText'),
-      form: document.getElementById('feedbackForm')
+      form: document.getElementById('feedbackForm'),
+      mainLayout: document.querySelector('.main-layout'),
+      centerCard: document.querySelector('main.form-card'),
+      railLeft: document.getElementById('railLeft'),
+      railRight: document.getElementById('railRight'),
+      leftCredit: document.getElementById('leftCredit'),
+      rightCredit: document.getElementById('rightCredit')
     };
 
     const MAX = 500;
@@ -418,6 +537,85 @@
                 els.btnSubmit.textContent = oldText;
               });
     });
+
+    // UNIQUE SIDE RAIL SLIDESHOWS (independent crossfade + Ken Burns, 3s each)
+    const imageUrls = [
+      'https://images.travelandleisureasia.com/wp-content/uploads/sites/3/2023/12/29122131/pokhra-1-1600x900.jpeg',
+      'https://www.gokitetours.com/wp-content/uploads/2024/12/10-Beautiful-Places-to-Visit-in-Nepal-on-Your-Next-Vacation.webp',
+      'https://images.squarespace-cdn.com/content/v1/609d3f1781f4a87463f238cb/1692302796055-97BM3S7YLYKRR1DEI2DS/image-asset.jpeg',
+      'https://media.nepalhighlandtreks.com/uploads/media/featured-2.jpg',
+      'https://thumbs.dreamstime.com/b/mountain-lake-beautiful-sunset-gosaikunda-nepal-over-snow-covered-mountains-frozen-landscape-view-trekking-route-langtang-61315510.jpg',
+      'https://basecampadventure.com/wp-content/uploads/2018/07/Kathmandu-Chitwan-Pokhara-Tours-IV-1290x540.jpg',
+      'https://www.ambitionhimalaya.com/wp-content/uploads/2024/05/View-of-Nagarkot.webp'
+    ];
+
+    function hostName(u) {
+      try { return new URL(u).hostname.replace(/^www\./,''); } catch { return ''; }
+    }
+
+    function buildRail(railEl, creditEl, offset = 0) {
+      const slides = [];
+      imageUrls.forEach((src, i) => {
+        const img = new Image();
+        img.className = 'rail-slide' + ((i === offset % imageUrls.length) ? ' active' : '');
+        img.src = src;
+        img.alt = 'Scenic Nepal view';
+        img.referrerPolicy = 'no-referrer';
+        railEl.appendChild(img);
+        slides.push(img);
+        // preload
+        const pre = new Image(); pre.src = src;
+      });
+
+      // init credit
+      const active = slides.find(s => s.classList.contains('active')) || slides[0];
+      if (active && creditEl) creditEl.textContent = 'Image: ' + hostName(active.src);
+
+      let idx = slides.indexOf(active);
+      let timer = null;
+
+      const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      function show(n) {
+        slides[idx].classList.remove('active');
+        idx = (n + slides.length) % slides.length;
+        slides[idx].classList.add('active');
+        if (creditEl) creditEl.textContent = 'Image: ' + hostName(slides[idx].src);
+      }
+      function next() { show(idx + 1); }
+      function start() {
+        stop();
+        if (!prefersReducedMotion) timer = setInterval(next, 3000); // 3s per image
+      }
+      function stop() { if (timer) { clearInterval(timer); timer = null; } }
+
+      railEl.addEventListener('mouseenter', stop);
+      railEl.addEventListener('mouseleave', start);
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) stop(); else start();
+      });
+
+      start();
+      return { start, stop, resize: ()=>{} };
+    }
+
+    // Keep side rails height matched to center form card for a clean edge-to-edge look
+    function syncRailHeights() {
+      const h = els.centerCard.offsetHeight;
+      els.railLeft.style.height = h + 'px';
+      els.railRight.style.height = h + 'px';
+    }
+    // Debounce resize
+    let rAF = null;
+    function onResize() {
+      if (rAF) cancelAnimationFrame(rAF);
+      rAF = requestAnimationFrame(syncRailHeights);
+    }
+    window.addEventListener('load', syncRailHeights);
+    window.addEventListener('resize', onResize);
+
+    // Build both rails with different starting offsets (so they don't sync)
+    buildRail(els.railLeft, els.leftCredit, 0);
+    buildRail(els.railRight, els.rightCredit, 2);
   })();
 </script>
 
