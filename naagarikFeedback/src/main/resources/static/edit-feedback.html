@@ -1,162 +1,779 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ne" dir="ltr">
 <head>
     <meta charset="UTF-8" />
-    <title>Edit Feedback - Naagarik Feedback Portal</title>
+    <title>Naagarik Feedback Portal | नागरिक प्रतिक्रिया पोर्टल</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari&family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
     <style>
+        /* Sticky footer layout */
+        html, body { height: 100%; }
         body {
-          background-color: #f8f9fa;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #f5f5f5;
+            font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
+            color: #333;
+            margin: 0;
         }
+
+        /* Top header bar */
+        .top-header {
+            background-color: #003366;
+            color: white;
+            font-size: 0.9rem;
+            padding: 5px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+        .top-header .right-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .top-header .right-links a.active { color: #ffcc00; text-decoration: underline; }
+        .top-header .right-links a:hover { text-decoration: underline; }
+
+        /* Main header */
         header {
-          background-color: #003366;
-          color: white;
-          padding: 10px 20px;
+            background-color: #004080;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
         }
-        header h1 {
-          font-weight: 700;
-          font-size: 1.8rem;
-          margin: 0;
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
+        .header-logo img {
+            width: 60px;
+            height: auto;
+            border-radius: 5px;
+            border: 1px solid white;
+        }
+        .header-texts { color: white; line-height: 1.2; }
+        .header-texts h1 { margin: 0; font-size: 1.7rem; font-weight: 700; letter-spacing: 0.03em; }
+        .header-texts h2 { margin: 0; font-size: 1rem; font-weight: 500; letter-spacing: 0.03em; }
+
+        /* Navigation bar */
         nav {
-          margin-top: 10px;
+            background-color: #0059b3;
+            box-shadow: inset 0 -3px 5px rgb(0 0 0 / 0.1);
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 30px;
+            padding: 12px 30px;
         }
         nav a {
-          color: white;
-          margin-right: 15px;
-          font-weight: 600;
-          text-decoration: none;
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 1rem;
+            padding-bottom: 5px;
+            border-bottom: 3px solid transparent;
+            transition: border-color 0.3s ease, color 0.3s ease;
+            font-family: 'Noto Sans Devanagari', sans-serif;
         }
-        nav a:hover {
-          text-decoration: underline;
+        nav a:hover, nav a.active {
+            border-bottom: 3px solid #ffcc00;
+            color: #ffcc00;
         }
-        main {
-          margin: 40px auto;
-          max-width: 700px;
-          background: white;
-          padding: 30px 40px;
-          border-radius: 5px;
-          box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
+
+        /* Split panorama side rails + form grid */
+        .main-layout {
+            display: grid;
+            grid-template-columns: clamp(140px, 18vw, 280px) minmax(320px, 900px) clamp(140px, 18vw, 280px);
+            gap: 18px;
+            align-items: start;
+            width: min(98vw, 1400px);
+            margin: 30px auto 80px;
+        }
+        .side-rail {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+            background: linear-gradient(135deg, #dfe9f3 0%, #ffffff 100%);
+            min-height: 400px; /* synced to form height by JS */
+            isolation: isolate;
+        }
+        .side-rail::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                    linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px);
+            background-size: 20px 20px, 20px 20px;
+            pointer-events: none;
+            z-index: 3;
+        }
+        .side-rail::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(0,0,0,0.0) 40%, rgba(0,0,0,0.12) 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Left/right half of same image to form a panorama */
+        .rail-slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.9s ease-in-out;
+            background-repeat: no-repeat;
+            background-size: 200% 100%;
+            transform-origin: center;
+        }
+        .side-rail.left .rail-slide { background-position: left center; transform-origin: left center; }
+        .side-rail.right .rail-slide { background-position: right center; transform-origin: right center; }
+        .rail-slide.active {
+            opacity: 1;
+            z-index: 1;
+            animation: kbZoom 6s ease-in-out both;
+        }
+        @keyframes kbZoom {
+            0%   { transform: scale(1.02); }
+            100% { transform: scale(1.08); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .rail-slide { transition: none; animation: none !important; }
+        }
+
+        .rail-credit {
+            position: absolute;
+            left: 10px;
+            bottom: 10px;
+            z-index: 4;
+            background: rgba(0,0,0,0.45);
+            color: #fff;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            backdrop-filter: blur(2px);
+        }
+        .rail-hint {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            z-index: 4;
+            font-size: 11px;
+            color: rgba(255,255,255,0.9);
+            background: rgba(0,0,0,0.35);
+            padding: 2px 6px;
+            border-radius: 999px;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        /* Form card */
+        main.form-card {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgb(0 0 0 / 0.1);
         }
         main h2 {
-          margin-bottom: 25px;
-          font-weight: 600;
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: #004080;
+            text-align: center;
         }
-        footer {
-          background-color: #003366;
-          color: white;
-          padding: 15px 20px;
-          text-align: center;
-          margin-top: 60px;
-          font-size: 0.9rem;
-        }
-        .btn-success {
-          background-color: #198754;
-          border-color: #198754;
-        }
-        .btn-success:hover {
-          background-color: #146c43;
-          border-color: #146c43;
-        }
+
+        /* Buttons */
         .btn-secondary {
-          background-color: #6c757d;
-          border-color: #6c757d;
+            background-color: #ffcc00;
+            border-color: #ffcc00;
+            color: #004080;
+            font-weight: 600;
         }
-        .btn-secondary:hover {
-          background-color: #545b62;
-          border-color: #545b62;
+        .btn-secondary:hover { background-color: #e6b800; border-color: #e6b800; color: #00264d; }
+        .btn-success {
+            background-color: #198754;
+            border-color: #198754;
+            font-weight: 600;
         }
+        .btn-success:hover { background-color: #145c32; border-color: #145c32; }
+
+        /* Help text and validation */
+        .is-invalid + .invalid-feedback { display: block; }
+
+        /* Footer */
+        footer {
+            background-color: #004080;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 0.95rem;
+            letter-spacing: 0.05em;
+            margin-top: auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+                width: min(95vw, 900px);
+                gap: 12px;
+            }
+            .side-rail { display: none; }
+            main.form-card { padding: 24px; }
+        }
+
+        /* BEAUTIFUL EMERGED MODAL POPUP */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 18, 28, 0.45);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: overlayFadeIn 180ms ease-out;
+        }
+        @keyframes overlayFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-box {
+            width: min(92vw, 520px);
+            border-radius: 16px;
+            background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2), 0 6px 16px rgba(0,0,0,0.12);
+            padding: 22px 22px 16px;
+            transform: translateY(6px) scale(0.98);
+            animation: modalPopIn 200ms ease-out forwards;
+            position: relative;
+        }
+        @keyframes modalPopIn { to { transform: translateY(0) scale(1); } }
+        .modal-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .modal-icon {
+            width: 42px; height: 42px; border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+            color: #fff; flex: 0 0 auto;
+        }
+        .modal-icon.success { background: linear-gradient(135deg, #16a34a, #22c55e); }
+        .modal-icon.error { background: linear-gradient(135deg, #dc2626, #ef4444); }
+        .modal-title { margin: 0; font-size: 1.2rem; font-weight: 800; color: #0f172a; letter-spacing: 0.02em; }
+        .modal-body { color: #0b2239; margin: 6px 2px 2px; font-size: 0.98rem; line-height: 1.55; }
+        .modal-actions { margin-top: 16px; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+        .modal-btn {
+            appearance: none; border: 0; border-radius: 10px; font-weight: 700;
+            padding: 10px 16px; cursor: pointer;
+            transition: transform 80ms ease, box-shadow 120ms ease, background 160ms ease;
+        }
+        .modal-btn:focus { outline: 2px solid rgba(59,130,246,0.5); outline-offset: 2px; }
+        .modal-btn.primary { background: linear-gradient(135deg, #004080, #0059b3); color: #fff; box-shadow: 0 6px 14px rgba(0, 64, 128, 0.28); }
+        .modal-btn.primary:hover { transform: translateY(-1px); }
+        .modal-btn.ghost { background: rgba(2, 6, 23, 0.06); color: #0f172a; }
+        .modal-btn.ghost:hover { background: rgba(2, 6, 23, 0.1); }
+        .modal-close-x {
+            position: absolute; top: 10px; right: 10px; width: 36px; height: 36px;
+            border: 0; border-radius: 999px; background: rgba(2, 6, 23, 0.06);
+            color: #0f172a; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+        .modal-close-x:hover { background: rgba(2, 6, 23, 0.12); }
     </style>
 </head>
 <body>
-<header>
-    <div class="d-flex align-items-center">
-        <img src="/images/Nepal-Flag.png" alt="Nepal Flag" width="50" class="me-3" />
-        <h1>Naagarik Feedback Portal</h1>
+
+<!-- Top header with language switch -->
+<div class="top-header">
+    <div class="left-text" id="topLabel">नेपाल सरकार</div>
+    <div class="right-links">
+        <a id="langNep" href="#" class="active" aria-label="Switch to Nepali">NEP</a>
+        <a id="langEng" href="#" aria-label="Switch to English">ENG</a>
     </div>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="add-feedback.html">Add Feedback</a>
-        <a href="feedback-list.html">View Feedbacks</a>
-    </nav>
+</div>
+
+<header>
+    <div class="header-container">
+        <div class="header-logo">
+            <img src="/images/Nepal-Flag.png" alt="Nepal Flag" />
+        </div>
+        <div class="header-texts">
+            <h1 id="hdrTitle">नागरिक प्रतिक्रिया पोर्टल</h1>
+            <h2 id="hdrSubtitle">Singha Durbar, Kathmandu | सिंहदरबार, काठमाडौं</h2>
+        </div>
+    </div>
 </header>
 
-<main>
-    <h2>Edit Feedback</h2>
-    <form id="editForm">
-        <input type="hidden" id="feedbackId" />
-        <div class="mb-3">
-            <label for="name" class="form-label">Name</label>
-            <input type="text" id="name" class="form-control" required />
-        </div>
-        <div class="mb-3">
-            <label for="location" class="form-label">Location</label>
-            <input type="text" id="location" class="form-control" required />
-        </div>
-        <div class="mb-3">
-            <label for="feedback" class="form-label">Feedback</label>
-            <textarea id="feedback" class="form-control" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-success">Update</button>
-        <a href="feedback-list.html" class="btn btn-secondary ms-2">Cancel</a>
-    </form>
-</main>
+<nav>
+    <div class="nav-container">
+        <a href="index.html" id="navHome">गृह पृष्ठ</a>
+        <a href="add-feedback.html" id="navAdd">प्रतिक्रिया थप्नुहोस्</a>
+        <a href="feedback-list.html" id="navView" class="active">प्रतिक्रिया हेर्नुहोस्</a>
+    </div>
+</nav>
 
-<footer>
-    &copy; 2025 Naagarik Feedback Portal. All Rights Reserved.
+<!-- 3-column layout: Left slideshow half | Form | Right slideshow half -->
+<div class="main-layout">
+    <!-- Left panorama half -->
+    <aside class="side-rail left" id="railLeft" aria-label="Scenic Nepal images left rail">
+        <div class="rail-hint">Hover to pause</div>
+        <div class="rail-credit" id="leftCredit"></div>
+    </aside>
+
+    <!-- Form card (center) -->
+    <main class="form-card">
+        <h2 id="pageHeading">प्रतिक्रिया सम्पादन गर्नुहोस्</h2>
+
+        <form id="editForm" novalidate>
+            <input type="hidden" id="feedbackId" />
+            <div class="mb-3">
+                <label for="name" class="form-label" id="lblName">नाम</label>
+                <input type="text" id="name" class="form-control" required />
+                <div class="invalid-feedback" id="errName">कृपया नाम लेख्नुहोस्।</div>
+            </div>
+            <div class="mb-3">
+                <label for="location" class="form-label" id="lblLocation">ठेगाना</label>
+                <input type="text" id="location" class="form-control" required />
+                <div class="invalid-feedback" id="errLocation">कृपया ठेगाना लेख्नुहोस्।</div>
+            </div>
+            <div class="mb-3">
+                <label for="feedback" class="form-label" id="lblFeedback">प्रतिक्रिया</label>
+                <textarea id="feedback" class="form-control" rows="4" maxlength="500" required></textarea>
+                <div class="invalid-feedback" id="errFeedback">कृपया प्रतिक्रिया लेख्नुहोस्।</div>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-success" id="btnUpdate">अद्यावधिक गर्नुहोस्</button>
+                <a href="feedback-list.html" class="btn btn-secondary ms-2" id="btnCancel">रद्द</a>
+            </div>
+        </form>
+    </main>
+
+    <!-- Right panorama half -->
+    <aside class="side-rail right" id="railRight" aria-label="Scenic Nepal images right rail">
+        <div class="rail-hint">Hover to pause</div>
+        <div class="rail-credit" id="rightCredit"></div>
+    </aside>
+</div>
+
+<footer id="footerText">
+    &copy; 2025 नागरिक प्रतिक्रिया पोर्टल | Naagarik Feedback Portal. सबै अधिकार सुरक्षित | All Rights Reserved.
 </footer>
 
 <script>
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
+    (function() {
+        // Translations
+        const t = {
+            ne: {
+                pageTitle: 'Naagarik Feedback Portal | नागरिक प्रतिक्रिया पोर्टल',
+                topLabel: 'नेपाल सरकार',
+                hdrTitle: 'नागरिक प्रतिक्रिया पोर्टल',
+                hdrSubtitle: 'सिंहदरबार, काठमाडौं',
+                navHome: 'गृह पृष्ठ',
+                navAdd: 'प्रतिक्रिया थप्नुहोस्',
+                navView: 'प्रतिक्रिया हेर्नुहोस्',
+                pageHeading: 'प्रतिक्रिया सम्पादन गर्नुहोस्',
+                lblName: 'नाम',
+                lblLocation: 'ठेगाना',
+                lblFeedback: 'प्रतिक्रिया',
+                phName: 'तपाईंको पूरा नाम',
+                phLocation: 'तपाईंको ठेगाना/स्थान',
+                phFeedback: 'तपाईंको सुझाव वा गुनासा यहाँ लेख्नुहोस्...',
+                errName: 'कृपया नाम लेख्नुहोस्।',
+                errLocation: 'कृपया ठेगाना लेख्नुहोस्।',
+                errFeedback: 'कृपया प्रतिक्रिया लेख्नुहोस्।',
+                btnUpdate: 'अद्यावधिक गर्नुहोस्',
+                btnUpdating: 'अद्यावधिक हुँदै...',
+                btnCancel: 'रद्द',
+                toastNoId: 'Feedback ID प्रदान गरिएको छैन।',
+                toastLoadError: 'प्रतिक्रिया विवरण लोड गर्दा त्रुटि भयो।',
+                toastUpdated: 'प्रतिक्रिया सफलतापूर्वक अद्यावधिक भयो!',
+                toastUpdateError: 'प्रतिक्रिया अद्यावधिक गर्न असफल।',
+                toastNetwork: 'नेटवर्क त्रुटि। कृपया पुन: प्रयास गर्नुहोस्।',
+                footer: '© 2025 नागरिक प्रतिक्रिया पोर्टल | Naagarik Feedback Portal. सबै अधिकार सुरक्षित | All Rights Reserved.',
+                successTitle: 'सफलता',
+                errorTitle: 'त्रुटि',
+                btnOk: 'ठीक छ',
+                btnView: 'प्रतिक्रियाहरू हेर्नुहोस्',
+                btnRetry: 'पुन: प्रयास गर्नुहोस्',
+                btnClose: 'बन्द गर्नुहोस्'
+            },
+            en: {
+                pageTitle: 'Naagarik Feedback Portal | Citizen Feedback Portal',
+                topLabel: 'Government of Nepal',
+                hdrTitle: 'Naagarik Feedback Portal',
+                hdrSubtitle: 'Singha Durbar, Kathmandu',
+                navHome: 'Home',
+                navAdd: 'Add Feedback',
+                navView: 'View Feedback',
+                pageHeading: 'Edit Feedback',
+                lblName: 'Name',
+                lblLocation: 'Location',
+                lblFeedback: 'Feedback',
+                phName: 'Your full name',
+                phLocation: 'Your address/location',
+                phFeedback: 'Write your suggestion or grievance here...',
+                errName: 'Please enter your name.',
+                errLocation: 'Please enter your location.',
+                errFeedback: 'Please enter your feedback.',
+                btnUpdate: 'Update',
+                btnUpdating: 'Updating...',
+                btnCancel: 'Cancel',
+                toastNoId: 'No feedback ID provided.',
+                toastLoadError: 'Error loading feedback details.',
+                toastUpdated: 'Feedback updated!',
+                toastUpdateError: 'Failed to update feedback.',
+                toastNetwork: 'Network error. Please try again.',
+                footer: '© 2025 Naagarik Feedback Portal | Citizen Feedback Portal. All Rights Reserved.',
+                successTitle: 'Success',
+                errorTitle: 'Error',
+                btnOk: 'OK',
+                btnView: 'View Feedbacks',
+                btnRetry: 'Retry',
+                btnClose: 'Close'
+            }
+        };
 
-    if (!id) {
-      alert('No feedback ID provided.');
-      window.location.href = 'feedback-list.html';
-    } else {
-      fetch(`/feedback/get-feedback/${id}`)
-        .then(res => {
-          if (!res.ok) throw new Error('Failed to fetch feedback');
-          return res.json();
-        })
-        .then(data => {
-          document.getElementById('feedbackId').value = data.id;
-          document.getElementById('name').value = data.name;
-          document.getElementById('location').value = data.location;
-          document.getElementById('feedback').value = data.feedback;
-        })
-        .catch(() => {
-          alert('Error loading feedback details.');
-          window.location.href = 'feedback-list.html';
-        });
-    }
+        const els = {
+            langNep: document.getElementById('langNep'),
+            langEng: document.getElementById('langEng'),
+            topLabel: document.getElementById('topLabel'),
+            hdrTitle: document.getElementById('hdrTitle'),
+            hdrSubtitle: document.getElementById('hdrSubtitle'),
+            navHome: document.getElementById('navHome'),
+            navAdd: document.getElementById('navAdd'),
+            navView: document.getElementById('navView'),
+            pageHeading: document.getElementById('pageHeading'),
+            lblName: document.getElementById('lblName'),
+            lblLocation: document.getElementById('lblLocation'),
+            lblFeedback: document.getElementById('lblFeedback'),
+            name: document.getElementById('name'),
+            location: document.getElementById('location'),
+            feedback: document.getElementById('feedback'),
+            errName: document.getElementById('errName'),
+            errLocation: document.getElementById('errLocation'),
+            errFeedback: document.getElementById('errFeedback'),
+            btnUpdate: document.getElementById('btnUpdate'),
+            btnCancel: document.getElementById('btnCancel'),
+            footerText: document.getElementById('footerText'),
+            form: document.getElementById('editForm'),
+            centerCard: document.querySelector('main.form-card'),
+            railLeft: document.getElementById('railLeft'),
+            railRight: document.getElementById('railRight'),
+            leftCredit: document.getElementById('leftCredit'),
+            rightCredit: document.getElementById('rightCredit'),
+            idField: document.getElementById('feedbackId')
+        };
 
-    document.getElementById('editForm').addEventListener('submit', function(e) {
-      e.preventDefault();
+        let lang = 'ne';
 
-      fetch(`/feedback/update-feedback/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: document.getElementById('name').value,
-          location: document.getElementById('location').value,
-          feedback: document.getElementById('feedback').value
-        })
-      })
-      .then(res => {
-        if (res.ok) {
-          alert('Feedback updated!');
-          window.location.href = 'feedback-list.html';
-        } else {
-          alert('Failed to update feedback.');
+        function applyLang(l) {
+            lang = (l === 'en') ? 'en' : 'ne';
+            const tr = t[lang];
+            document.documentElement.lang = lang;
+            document.title = tr.pageTitle;
+
+            els.topLabel.textContent = tr.topLabel;
+            els.hdrTitle.textContent = tr.hdrTitle;
+            els.hdrSubtitle.textContent = tr.hdrSubtitle;
+
+            els.navHome.textContent = tr.navHome;
+            els.navAdd.textContent = tr.navAdd;
+            els.navView.textContent = tr.navView;
+
+            els.pageHeading.textContent = tr.pageHeading;
+
+            els.lblName.textContent = tr.lblName;
+            els.lblLocation.textContent = tr.lblLocation;
+            els.lblFeedback.textContent = tr.lblFeedback;
+
+            els.name.placeholder = tr.phName;
+            els.location.placeholder = tr.phLocation;
+            els.feedback.placeholder = tr.phFeedback;
+
+            els.btnUpdate.textContent = tr.btnUpdate;
+            els.btnCancel.textContent = tr.btnCancel;
+
+            els.footerText.textContent = tr.footer;
+
+            els.langEng.classList.toggle('active', lang === 'en');
+            els.langNep.classList.toggle('active', lang === 'ne');
+
+            try { localStorage.setItem('siteLang', lang); } catch {}
         }
-      })
-      .catch(() => {
-        alert('Network error. Please try again.');
-      });
-    });
+
+        function initLang() {
+            try {
+                const saved = localStorage.getItem('siteLang');
+                if (saved === 'en' || saved === 'ne') lang = saved;
+            } catch {}
+            applyLang(lang);
+        }
+
+        els.langNep.addEventListener('click', (e) => { e.preventDefault(); applyLang('ne'); });
+        els.langEng.addEventListener('click', (e) => { e.preventDefault(); applyLang('en'); });
+
+        initLang();
+
+        // Modal helper
+        function showModal({ type = 'success', title = '', message = '', actions = [] }) {
+            return new Promise((resolve) => {
+                const overlay = document.createElement('div');
+                overlay.className = 'modal-overlay';
+                overlay.setAttribute('role', 'dialog');
+                overlay.setAttribute('aria-modal', 'true');
+
+                const box = document.createElement('div');
+                box.className = 'modal-box';
+
+                const closeX = document.createElement('button');
+                closeX.className = 'modal-close-x';
+                closeX.setAttribute('aria-label', 'Close');
+                closeX.innerHTML = '&#10005;';
+
+                const head = document.createElement('div');
+                head.className = 'modal-head';
+
+                const icon = document.createElement('div');
+                icon.className = 'modal-icon ' + (type === 'error' ? 'error' : 'success');
+                icon.innerHTML = type === 'error'
+                    ? '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Z" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>'
+                    : '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+                const titleEl = document.createElement('h3');
+                titleEl.className = 'modal-title';
+                titleEl.textContent = title;
+
+                const body = document.createElement('div');
+                body.className = 'modal-body';
+                body.textContent = message;
+
+                const footer = document.createElement('div');
+                footer.className = 'modal-actions';
+
+                if (!actions.length) {
+                    const ok = document.createElement('button');
+                    ok.className = 'modal-btn primary';
+                    ok.textContent = t[lang].btnOk;
+                    ok.addEventListener('click', () => finish('ok'));
+                    footer.appendChild(ok);
+                } else {
+                    actions.forEach((a, i) => {
+                        const btn = document.createElement('button');
+                        btn.className = 'modal-btn ' + (a.variant || (i === 0 ? 'primary' : 'ghost'));
+                        btn.textContent = a.label;
+                        btn.addEventListener('click', () => finish(a.id || ('action_' + i)));
+                        footer.appendChild(btn);
+                    });
+                }
+
+                box.appendChild(closeX);
+                box.appendChild(head); head.appendChild(icon); head.appendChild(titleEl);
+                box.appendChild(body);
+                box.appendChild(footer);
+                overlay.appendChild(box);
+                document.body.appendChild(overlay);
+
+                const prevActive = document.activeElement;
+                const focusable = box.querySelectorAll('button');
+                if (focusable.length) focusable[0].focus();
+
+                function cleanup() { overlay.remove(); if (prevActive && prevActive.focus) prevActive.focus(); }
+                function finish(val) { cleanup(); resolve(val); }
+
+                closeX.addEventListener('click', () => finish('close'));
+                overlay.addEventListener('click', (e) => { if (e.target === overlay) finish('overlay'); });
+                document.addEventListener('keydown', function onKey(e) {
+                    if (!document.body.contains(overlay)) { document.removeEventListener('keydown', onKey); return; }
+                    if (e.key === 'Escape') { e.preventDefault(); finish('escape'); }
+                    else if (e.key === 'Tab' && focusable.length) {
+                        const first = focusable[0], last = focusable[focusable.length - 1];
+                        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+                        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+                    }
+                });
+            });
+        }
+
+        // Get ID and load data
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+
+        if (!id) {
+            showModal({
+                type: 'error',
+                title: t[lang].errorTitle,
+                message: t[lang].toastNoId,
+                actions: [{ id: 'view', label: t[lang].btnView, variant: 'primary' }, { id: 'close', label: t[lang].btnClose, variant: 'ghost' }]
+            }).then(a => { window.location.href = 'feedback-list.html'; });
+        } else {
+            fetch(`/feedback/get-feedback/${encodeURIComponent(id)}`)
+                .then(res => { if (!res.ok) throw new Error('load_fail'); return res.json(); })
+                .then(data => {
+                    els.idField.value = data.id;
+                    els.name.value = data.name || '';
+                    els.location.value = data.location || '';
+                    els.feedback.value = data.feedback || '';
+                })
+                .catch(() => {
+                    showModal({
+                        type: 'error',
+                        title: t[lang].errorTitle,
+                        message: t[lang].toastLoadError,
+                        actions: [{ id: 'view', label: t[lang].btnView, variant: 'primary' }, { id: 'close', label: t[lang].btnClose, variant: 'ghost' }]
+                    }).then(() => { window.location.href = 'feedback-list.html'; });
+                });
+        }
+
+        // Validation
+        function setInvalid(el, invalid, msgEl) {
+            if (invalid) {
+                el.classList.add('is-invalid');
+                if (msgEl) msgEl.style.display = 'block';
+            } else {
+                el.classList.remove('is-invalid');
+                if (msgEl) msgEl.style.display = 'none';
+            }
+        }
+
+        // Submit (PUT) with modal feedback
+        els.form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const tr = t[lang];
+
+            const name = els.name.value.trim();
+            const location = els.location.value.trim();
+            const feedback = els.feedback.value.trim();
+
+            let valid = true;
+            setInvalid(els.name, !name, els.errName); if (!name) valid = false;
+            setInvalid(els.location, !location, els.errLocation); if (!location) valid = false;
+            setInvalid(els.feedback, !feedback, els.errFeedback); if (!feedback) valid = false;
+            if (!valid) return;
+
+            const old = els.btnUpdate.textContent;
+            function setSubmitting(is) {
+                els.btnUpdate.disabled = is;
+                els.btnUpdate.textContent = is ? tr.btnUpdating : old;
+            }
+
+            function attemptUpdate() {
+                setSubmitting(true);
+                fetch(`/feedback/update-feedback/${encodeURIComponent(id)}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, location, feedback })
+                })
+                    .then(res => {
+                        if (!res.ok) throw new Error('bad_status');
+                        setSubmitting(false);
+                        showModal({
+                            type: 'success',
+                            title: tr.successTitle,
+                            message: tr.toastUpdated,
+                            actions: [{ id: 'view', label: tr.btnView, variant: 'primary' }, { id: 'close', label: tr.btnClose, variant: 'ghost' }]
+                        }).then(a => {
+                            if (a === 'view') window.location.href = 'feedback-list.html';
+                        });
+                    })
+                    .catch(err => {
+                        console.error('Update error:', err);
+                        setSubmitting(false);
+                        const isNetwork = err.message !== 'bad_status';
+                        showModal({
+                            type: 'error',
+                            title: t[lang].errorTitle,
+                            message: isNetwork ? tr.toastNetwork : tr.toastUpdateError,
+                            actions: [{ id: 'retry', label: tr.btnRetry, variant: 'primary' }, { id: 'close', label: tr.btnClose, variant: 'ghost' }]
+                        }).then(a => { if (a === 'retry') attemptUpdate(); });
+                    });
+            }
+
+            attemptUpdate();
+        });
+
+        // Split panorama slideshow (left/right halves from the same image), 3s per image
+        const imageUrls = [
+            'https://images.travelandleisureasia.com/wp-content/uploads/sites/3/2023/12/29122131/pokhra-1-1600x900.jpeg',
+            'https://www.gokitetours.com/wp-content/uploads/2024/12/10-Beautiful-Places-to-Visit-in-Nepal-on-Your-Next-Vacation.webp',
+            'https://images.squarespace-cdn.com/content/v1/609d3f1781f4a87463f238cb/1692302796055-97BM3S7YLYKRR1DEI2DS/image-asset.jpeg',
+            'https://media.nepalhighlandtreks.com/uploads/media/featured-2.jpg',
+            'https://thumbs.dreamstime.com/b/mountain-lake-beautiful-sunset-gosaikunda-nepal-over-snow-covered-mountains-frozen-landscape-view-trekking-route-langtang-61315510.jpg',
+            'https://basecampadventure.com/wp-content/uploads/2018/07/Kathmandu-Chitwan-Pokhara-Tours-IV-1290x540.jpg',
+            'https://www.ambitionhimalaya.com/wp-content/uploads/2024/05/View-of-Nagarkot.webp'
+        ];
+
+        const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        function hostName(u) { try { return new URL(u).hostname.replace(/^www\./,''); } catch { return ''; } }
+
+        const leftSlides = [], rightSlides = [];
+        imageUrls.forEach((src) => {
+            const l = document.createElement('div');
+            l.className = 'rail-slide';
+            l.style.backgroundImage = `url("${src}")`;
+            l.style.backgroundPosition = 'left center';
+            els.railLeft.appendChild(l);
+            leftSlides.push(l);
+
+            const r = document.createElement('div');
+            r.className = 'rail-slide';
+            r.style.backgroundImage = `url("${src}")`;
+            r.style.backgroundPosition = 'right center';
+            els.railRight.appendChild(r);
+            rightSlides.push(r);
+
+            const pre = new Image(); pre.src = src;
+        });
+
+        let idx = 0;
+        function setActive(i) {
+            leftSlides[idx]?.classList.remove('active');
+            rightSlides[idx]?.classList.remove('active');
+            idx = (i + leftSlides.length) % leftSlides.length;
+            leftSlides[idx].classList.add('active');
+            rightSlides[idx].classList.add('active');
+            els.leftCredit.textContent = 'Image: ' + hostName(imageUrls[idx]);
+            els.rightCredit.textContent = 'Image: ' + hostName(imageUrls[idx]);
+        }
+        if (leftSlides.length) setActive(0);
+
+        let timer = null;
+        function start() {
+            stop();
+            if (!prefersReducedMotion && leftSlides.length > 1) {
+                timer = setInterval(() => setActive(idx + 1), 3000);
+            }
+        }
+        function stop() { if (timer) { clearInterval(timer); timer = null; } }
+
+        els.railLeft.addEventListener('mouseenter', stop);
+        els.railRight.addEventListener('mouseenter', stop);
+        els.railLeft.addEventListener('mouseleave', start);
+        els.railRight.addEventListener('mouseleave', start);
+        document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); else start(); });
+        start();
+
+        // Match rail heights to form for a clean edge-to-edge look
+        function syncRailHeights() {
+            const h = els.centerCard.offsetHeight;
+            els.railLeft.style.height = h + 'px';
+            els.railRight.style.height = h + 'px';
+        }
+        let rAF = null;
+        function onResize() { if (rAF) cancelAnimationFrame(rAF); rAF = requestAnimationFrame(syncRailHeights); }
+        window.addEventListener('load', syncRailHeights);
+        window.addEventListener('resize', onResize);
+    })();
 </script>
+
 </body>
 </html>
