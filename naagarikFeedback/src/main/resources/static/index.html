@@ -8,16 +8,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari&family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
     <style>
         /* Base + sticky footer layout */
-        html, body {
-            height: 100%;
-        }
+        html, body { height: 100%; }
         body {
             font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
             background-color: #f5f5f5;
             margin: 0;
             color: #333;
-
-            /* Sticky footer via flex layout */
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -35,9 +31,7 @@
             font-weight: 600;
             letter-spacing: 0.05em;
         }
-        .top-header .left-text {
-            font-family: 'Noto Sans Devanagari', sans-serif;
-        }
+        .top-header .left-text { font-family: 'Noto Sans Devanagari', sans-serif; }
         .top-header .right-links a {
             color: white;
             text-decoration: none;
@@ -46,13 +40,8 @@
             font-size: 0.9rem;
             cursor: pointer;
         }
-        .top-header .right-links a.active {
-            color: #ffcc00;
-            text-decoration: underline;
-        }
-        .top-header .right-links a:hover {
-            text-decoration: underline;
-        }
+        .top-header .right-links a.active { color: #ffcc00; text-decoration: underline; }
+        .top-header .right-links a:hover { text-decoration: underline; }
 
         /* Main header with logo and titles */
         header {
@@ -113,23 +102,54 @@
             transition: border-color 0.3s ease;
             font-family: 'Noto Sans Devanagari', sans-serif;
         }
-        nav a:hover, nav a.active {
-            border-bottom: 3px solid #ffcc00;
-            color: #ffcc00;
+        nav a:hover, nav a.active { border-bottom: 3px solid #ffcc00; color: #ffcc00; }
+
+        /* Hero slideshow */
+        .hero {
+            background: transparent;
+        }
+        .hero-slideshow {
+            max-width: 1200px;
+            margin: 20px auto 0;
+            height: clamp(200px, 28vw, 420px);
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+            background: linear-gradient(135deg, #dfe9f3 0%, #ffffff 100%);
+        }
+        .hero-slideshow .slide {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        .hero-slideshow .slide.active { opacity: 1; }
+        .hero-slideshow::after {
+            /* subtle gradient overlay for contrast */
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.08), rgba(0,0,0,0.15));
+            pointer-events: none;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .hero-slideshow .slide { transition: none; }
         }
 
         /* Main content */
         main {
             max-width: 900px;
             background: white;
-            margin: 50px auto 80px;
+            margin: 30px auto 80px;
             padding: 40px 50px;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgb(0 0 0 / 0.1);
             text-align: center;
-
-            /* Take up remaining space so footer stays at bottom */
-            flex: 1;
+            flex: 1; /* take remaining space so footer stays at bottom */
         }
         main h2 {
             font-weight: 700;
@@ -154,10 +174,7 @@
             border-radius: 4px;
             transition: background-color 0.3s ease;
         }
-        .btn-primary:hover {
-            background-color: #00264d;
-            border-color: #00264d;
-        }
+        .btn-primary:hover { background-color: #00264d; border-color: #00264d; }
         .btn-secondary {
             background-color: #ffcc00;
             border-color: #ffcc00;
@@ -168,11 +185,7 @@
             border-radius: 4px;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
-        .btn-secondary:hover {
-            background-color: #e6b800;
-            border-color: #e6b800;
-            color: #00264d;
-        }
+        .btn-secondary:hover { background-color: #e6b800; border-color: #e6b800; color: #00264d; }
         .btn-group {
             display: flex;
             justify-content: center;
@@ -189,29 +202,26 @@
             letter-spacing: 0.05em;
             box-shadow: inset 0 3px 5px rgb(0 0 0 / 0.1);
             font-family: 'Noto Sans Devanagari', sans-serif;
-
-            /* Stick to bottom of the page */
-            margin-top: auto;
+            margin-top: auto; /* stick to bottom */
         }
 
-        /* Responsive */
+        /* Responsive tweaks */
         @media (max-width: 768px) {
             .header-container, .nav-container {
                 flex-direction: column;
                 align-items: center;
                 gap: 15px;
             }
+            .hero-slideshow {
+                margin: 15px 15px 0;
+                height: clamp(180px, 38vw, 300px);
+            }
             main {
-                margin: 30px 20px 60px;
+                margin: 20px 15px 60px;
                 padding: 30px 25px;
             }
-            .btn-group {
-                flex-direction: column;
-                gap: 15px;
-            }
-            nav a {
-                font-size: 1.1rem;
-            }
+            .btn-group { flex-direction: column; gap: 15px; }
+            nav a { font-size: 1.1rem; }
         }
     </style>
 </head>
@@ -246,6 +256,17 @@
     </div>
 </nav>
 
+<!-- Hero slideshow with Nepal images -->
+<section class="hero" aria-label="Scenic Nepal images">
+    <div class="hero-slideshow" id="heroSlideshow">
+        <!-- Replace image paths with your own Nepal images inside /images/ -->
+        <img class="slide active" src="/images/nepal-himalayas.jpg" alt="Snow-capped Himalayas in Nepal" />
+        <img class="slide" src="/images/nepal-pokhara-fewa-lake.jpg" alt="Phewa Lake in Pokhara reflecting Annapurna range" />
+        <img class="slide" src="/images/nepal-boudhanath-stupa.jpg" alt="Boudhanath Stupa in Kathmandu" />
+        <img class="slide" src="/images/nepal-pashupatinath.jpg" alt="Pashupatinath Temple complex, Kathmandu" />
+    </div>
+</section>
+
 <main>
     <h2 id="mainHeading">नागरिक प्रतिक्रिया पोर्टलमा स्वागत छ</h2>
     <p id="mainPara">नागरिक प्रतिक्रिया पोर्टलमा तपाईंलाई स्वागत छ। यहाँ तपाईं आफ्नो महत्वपूर्ण प्रतिक्रिया दिन सक्नुहुन्छ वा अरूले दिएका प्रतिक्रियाहरू हेर्न सक्नुहुन्छ। तपाईंको आवाजले नेपालको विकासमा योगदान पुर्‍याउँछ।</p>
@@ -262,11 +283,12 @@
 
 <script>
     (function() {
+        // Translations
         const translations = {
             ne: {
                 pageTitle: 'Naagarik Feedback Portal | नागरिक प्रतिक्रिया पोर्टल',
                 topLabel: 'नेपाल सरकार',
-                hdrTitle: 'नागरिक मन्त्रालय',
+                hdrTitle: 'परराष्ट्र मन्त्रालय',
                 hdrSubtitle: 'सिंहदरबार, काठमाडौं',
                 navHome: 'गृह पृष्ठ',
                 navAdd: 'प्रतिक्रिया थप्नुहोस्',
@@ -280,7 +302,7 @@
             en: {
                 pageTitle: 'Naagarik Feedback Portal | Citizen Feedback Portal',
                 topLabel: 'Government of Nepal',
-                hdrTitle: 'Ministry of Feedback',
+                hdrTitle: 'Ministry of Foreign Affairs',
                 hdrSubtitle: 'Singha Durbar, Kathmandu',
                 navHome: 'Home',
                 navAdd: 'Add Feedback',
@@ -328,7 +350,6 @@
             elements.btnView.textContent = t.btnView;
             elements.footerText.textContent = t.footerText;
 
-            // Toggle active indicator on language links
             if (lang === 'en') {
                 langEng.classList.add('active');
                 langNep.classList.remove('active');
@@ -337,7 +358,6 @@
                 langEng.classList.remove('active');
             }
 
-            // Persist preference
             try { localStorage.setItem('siteLang', lang); } catch (_) {}
         }
 
@@ -361,6 +381,23 @@
 
         // Initialize language on first load
         initLang();
+
+        // Lightweight slideshow (auto changes every 2 seconds)
+        (function initSlideshow() {
+            const slides = document.querySelectorAll('#heroSlideshow .slide');
+            if (!slides || slides.length <= 1) return;
+
+            // Respect user motion preference
+            const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (prefersReducedMotion) return;
+
+            let index = 0;
+            setInterval(() => {
+                slides[index].classList.remove('active');
+                index = (index + 1) % slides.length;
+                slides[index].classList.add('active');
+            }, 2000); // 2 seconds
+        })();
     })();
 </script>
 
