@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ne" dir="ltr">
+<html lang="ने" dir="ltr">
 <head>
     <meta charset="UTF-8" />
     <title>Naagarik Feedback Portal | नागरिक प्रतिक्रिया पोर्टल</title>
@@ -159,6 +159,62 @@
             main { padding: 20px; }
             table { font-size: 0.95rem; }
         }
+
+        /* BEAUTIFUL EMERGED MODAL POPUP (shared with other pages) */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 18, 28, 0.45);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: overlayFadeIn 180ms ease-out;
+        }
+        @keyframes overlayFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-box {
+            width: min(92vw, 520px);
+            border-radius: 16px;
+            background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2), 0 6px 16px rgba(0,0,0,0.12);
+            padding: 22px 22px 16px;
+            transform: translateY(6px) scale(0.98);
+            animation: modalPopIn 200ms ease-out forwards;
+            position: relative;
+        }
+        @keyframes modalPopIn { to { transform: translateY(0) scale(1); } }
+        .modal-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .modal-icon {
+            width: 42px; height: 42px; border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+            color: #fff; flex: 0 0 auto;
+        }
+        .modal-icon.success { background: linear-gradient(135deg, #16a34a, #22c55e); }
+        .modal-icon.error   { background: linear-gradient(135deg, #dc2626, #ef4444); }
+        .modal-title { margin: 0; font-size: 1.2rem; font-weight: 800; color: #0f172a; letter-spacing: 0.02em; }
+        .modal-body { color: #0b2239; margin: 6px 2px 2px; font-size: 0.98rem; line-height: 1.55; }
+        .modal-actions { margin-top: 16px; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+        .modal-btn {
+            appearance: none; border: 0; border-radius: 10px; font-weight: 700;
+            padding: 10px 16px; cursor: pointer;
+            transition: transform 80ms ease, box-shadow 120ms ease, background 160ms ease;
+        }
+        .modal-btn:focus { outline: 2px solid rgba(59,130,246,0.5); outline-offset: 2px; }
+        .modal-btn.primary { background: linear-gradient(135deg, #004080, #0059b3); color: #fff; box-shadow: 0 6px 14px rgba(0, 64, 128, 0.28); }
+        .modal-btn.primary:hover { transform: translateY(-1px); }
+        .modal-btn.ghost { background: rgba(2, 6, 23, 0.06); color: #0f172a; }
+        .modal-btn.ghost:hover { background: rgba(2, 6, 23, 0.1); }
+        /* Destructive action button */
+        .modal-btn.danger { background: linear-gradient(135deg, #dc2626, #ef4444); color: #fff; box-shadow: 0 6px 14px rgba(220,38,38,0.28); }
+        .modal-btn.danger:hover { transform: translateY(-1px); }
+        .modal-close-x {
+            position: absolute; top: 10px; right: 10px; width: 36px; height: 36px;
+            border: 0; border-radius: 999px; background: rgba(2, 6, 23, 0.06);
+            color: #0f172a; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+        .modal-close-x:hover { background: rgba(2, 6, 23, 0.12); }
     </style>
 </head>
 <body>
@@ -248,7 +304,15 @@
                 delConfirm: 'के तपाईं यो प्रतिक्रियालाई हटाउन चाहनुहुन्छ?',
                 delSuccess: 'प्रतिक्रिया सफलतापूर्वक हटाइयो।',
                 delFail: 'प्रतिक्रिया हटाउन असफल।',
-                footer: '© 2025 नागरिक प्रतिक्रिया पोर्टल | Naagarik Feedback Portal. सबै अधिकार सुरक्षित | All Rights Reserved.'
+                /* Modal extras */
+                successTitle: 'सफलता',
+                errorTitle: 'त्रुटि',
+                confirmTitle: 'पुष्टि',
+                btnOk: 'ठीक छ',
+                btnClose: 'बन्द गर्नुहोस्',
+                btnRetry: 'पुन: प्रयास गर्नुहोस्',
+                btnCancel: 'रद्द',
+                btnYesDelete: 'हो, हटाउनुहोस्'
             },
             en: {
                 pageTitle: 'Naagarik Feedback Portal | Citizen Feedback Portal',
@@ -273,7 +337,15 @@
                 delConfirm: 'Are you sure you want to delete this feedback?',
                 delSuccess: 'Feedback deleted successfully.',
                 delFail: 'Failed to delete feedback.',
-                footer: '© 2025 Naagarik Feedback Portal | Citizen Feedback Portal. All Rights Reserved.'
+                /* Modal extras */
+                successTitle: 'Success',
+                errorTitle: 'Error',
+                confirmTitle: 'Confirm',
+                btnOk: 'OK',
+                btnClose: 'Close',
+                btnRetry: 'Retry',
+                btnCancel: 'Cancel',
+                btnYesDelete: 'Yes, Delete'
             }
         };
 
@@ -307,8 +379,7 @@
 
             els.topLabel.textContent = tr.topLabel;
             els.hdrTitle.textContent = tr.hdrTitle;
-            // Show both languages in subtitle for context
-            els.hdrSubtitle.textContent = (lang === 'ne') ? `${tr.hdrSubtitle}` : `${tr.hdrSubtitle}`;
+            els.hdrSubtitle.textContent = tr.hdrSubtitle;
 
             els.navHome.textContent = tr.navHome;
             els.navAdd.textContent = tr.navAdd;
@@ -349,6 +420,86 @@
         els.langEng.addEventListener('click', (e) => { e.preventDefault(); applyLang('en'); });
 
         initLang();
+
+        // Modal helper (like other pages)
+        function showModal({ type = 'success', title = '', message = '', actions = [] }) {
+            return new Promise((resolve) => {
+                const overlay = document.createElement('div');
+                overlay.className = 'modal-overlay';
+                overlay.setAttribute('role', 'dialog');
+                overlay.setAttribute('aria-modal', 'true');
+
+                const box = document.createElement('div');
+                box.className = 'modal-box';
+
+                const closeX = document.createElement('button');
+                closeX.className = 'modal-close-x';
+                closeX.setAttribute('aria-label', 'Close');
+                closeX.innerHTML = '&#10005;';
+
+                const head = document.createElement('div');
+                head.className = 'modal-head';
+
+                const icon = document.createElement('div');
+                icon.className = 'modal-icon ' + (type === 'error' ? 'error' : 'success');
+                icon.innerHTML = type === 'error'
+                    ? '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Z" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>'
+                    : '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+                const titleEl = document.createElement('h3');
+                titleEl.className = 'modal-title';
+                titleEl.textContent = title;
+
+                const body = document.createElement('div');
+                body.className = 'modal-body';
+                body.textContent = message;
+
+                const footer = document.createElement('div');
+                footer.className = 'modal-actions';
+
+                if (!actions.length) {
+                    const ok = document.createElement('button');
+                    ok.className = 'modal-btn primary';
+                    ok.textContent = t[lang].btnOk;
+                    ok.addEventListener('click', () => finish('ok'));
+                    footer.appendChild(ok);
+                } else {
+                    actions.forEach((a, i) => {
+                        const btn = document.createElement('button');
+                        btn.className = 'modal-btn ' + (a.variant || (i === 0 ? 'primary' : 'ghost'));
+                        btn.textContent = a.label;
+                        btn.addEventListener('click', () => finish(a.id || ('action_' + i)));
+                        footer.appendChild(btn);
+                    });
+                }
+
+                box.appendChild(closeX);
+                box.appendChild(head); head.appendChild(icon); head.appendChild(titleEl);
+                box.appendChild(body);
+                box.appendChild(footer);
+                overlay.appendChild(box);
+                document.body.appendChild(overlay);
+
+                const prevActive = document.activeElement;
+                const focusable = box.querySelectorAll('button');
+                if (focusable.length) focusable[0].focus();
+
+                function cleanup() { overlay.remove(); if (prevActive && prevActive.focus) prevActive.focus(); }
+                function finish(val) { cleanup(); resolve(val); }
+
+                closeX.addEventListener('click', () => finish('close'));
+                overlay.addEventListener('click', (e) => { if (e.target === overlay) finish('overlay'); });
+                document.addEventListener('keydown', function onKey(e) {
+                    if (!document.body.contains(overlay)) { document.removeEventListener('keydown', onKey); return; }
+                    if (e.key === 'Escape') { e.preventDefault(); finish('escape'); }
+                    else if (e.key === 'Tab' && focusable.length) {
+                        const first = focusable[0], last = focusable[focusable.length - 1];
+                        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+                        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+                    }
+                });
+            });
+        }
 
         // Utilities to safely build table rows (avoid XSS)
         function createCell(text) {
@@ -417,22 +568,23 @@
                 .catch(err => {
                     console.error('Error fetching feedback:', err);
                     renderStatusRow('emptyRow', t[lang].loadError);
-                    alert(t[lang].loadError);
+                    // Optional pretty popup for load error
+                    showModal({
+                        type: 'error',
+                        title: t[lang].errorTitle,
+                        message: t[lang].loadError,
+                        actions: [
+                            { id: 'retry', label: t[lang].btnRetry, variant: 'primary' },
+                            { id: 'close', label: t[lang].btnClose, variant: 'ghost' }
+                        ]
+                    }).then(a => { if (a === 'retry') fetchFeedbacks(); });
                 });
         }
 
         fetchFeedbacks();
 
-        // Delete handler with event delegation
-        els.tableBody.addEventListener('click', (e) => {
-            const btn = e.target.closest('button.btn-danger[data-id]');
-            if (!btn) return;
-
-            const id = btn.getAttribute('data-id');
-            if (!id) return;
-
-            if (!confirm(t[lang].delConfirm)) return;
-
+        // Delete flow with pretty modal
+        function attemptDelete(id, btn) {
             fetch(`/feedback/delete-feedback/${encodeURIComponent(id)}`, { method: 'DELETE' })
                 .then(res => {
                     if (!res.ok) throw new Error('Delete failed');
@@ -444,12 +596,50 @@
                     const hasRows = els.tableBody.querySelectorAll('tr').length > 0;
                     if (!hasRows) renderStatusRow('emptyRow', t[lang].empty);
 
-                    alert(t[lang].delSuccess);
+                    // Success modal
+                    showModal({
+                        type: 'success',
+                        title: t[lang].successTitle,
+                        message: t[lang].delSuccess,
+                        actions: [{ id: 'ok', label: t[lang].btnOk, variant: 'primary' }]
+                    });
                 })
                 .catch(err => {
                     console.error('Delete error:', err);
-                    alert(t[lang].delFail);
+                    showModal({
+                        type: 'error',
+                        title: t[lang].errorTitle,
+                        message: t[lang].delFail,
+                        actions: [
+                            { id: 'retry', label: t[lang].btnRetry, variant: 'primary' },
+                            { id: 'close', label: t[lang].btnClose, variant: 'ghost' }
+                        ]
+                    }).then(a => { if (a === 'retry') attemptDelete(id, btn); });
                 });
+        }
+
+        // Event delegation for delete with confirmation modal
+        els.tableBody.addEventListener('click', (e) => {
+            const btn = e.target.closest('button.btn-danger[data-id]');
+            if (!btn) return;
+
+            const id = btn.getAttribute('data-id');
+            if (!id) return;
+
+            // Confirmation modal
+            showModal({
+                type: 'error',
+                title: t[lang].confirmTitle,
+                message: t[lang].delConfirm,
+                actions: [
+                    { id: 'delete', label: t[lang].btnYesDelete, variant: 'danger' },
+                    { id: 'cancel', label: t[lang].btnCancel, variant: 'ghost' }
+                ]
+            }).then(action => {
+                if (action === 'delete') {
+                    attemptDelete(id, btn);
+                }
+            });
         });
     })();
 </script>
