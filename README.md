@@ -1,19 +1,19 @@
-📢 Naagarik Feedback System
+Naagarik Feedback System
 
-Naagarik Feedback System is a web-based platform where citizens 🧑‍🤝‍🧑 can provide feedback directly to the government 🏛️. It promotes transparency, civic engagement, and helps authorities receive suggestions, complaints, or appreciations from the public.
+Naagarik Feedback System is a web-based platform where citizens can provide feedback directly to the government. It promotes transparency, civic engagement, and helps authorities receive suggestions, complaints, or appreciations from the public.
 
-🛠️ Tech Stack:
-- ⚙️ Backend: Spring Boot (Java)
-- 🎨 Frontend: HTML, CSS, JavaScript
-- 🗄️ Database: MySQL
+Tech Stack:
+- Backend: Spring Boot (Java)
+- Frontend: HTML, CSS, JavaScript
+- Database: MySQL
 
-✨ Features:
-- 🗣️ Submit feedback anonymously or with login
-- 🧾 Admins can view and manage feedback
-- 🔐 Role-based access control (User/Admin)
-- 🔄 REST API for frontend-backend interaction
+Features:
+- Submit feedback anonymously or with login
+- Admins can view and manage feedback
+- Role-based access control (User/Admin)
+- REST API for frontend-backend interaction
 
-📁 Project Structure: 
+Project Structure: 
 ```
 NaagarikFeedback/
 ├── backend/
@@ -28,9 +28,9 @@ NaagarikFeedback/
 │   ├── add-feedback.html              → Home page
 │   └── feedback-list.html             → Styling and interactivity
 ```
-🚀 Getting Started:
+Getting Started:
 
-🔧 Backend Setup:
+Backend Setup:
 1. Clone the repository
 2. Open the 'backend/' as a Maven project
 3. Set your database in `application.properties`:
@@ -40,7 +40,7 @@ NaagarikFeedback/
    spring.jpa.hibernate.ddl-auto=update  
 4. Run the Spring Boot application
 
-🌐 Frontend Setup:
+Frontend Setup:
 1. Open `frontend/index.html` in your browser
 2. Make sure the API URLs match your backend configuration
 
@@ -54,9 +54,9 @@ NaagarikFeedback/
 
 
 
-💬 Feedback & Contribution:
-If you'd like to suggest improvements or report bugs 🐞, feel free to open an issue or pull request!
+Feedback & Contribution:
+If you'd like to suggest improvements or report bugs, feel free to open an issue or pull request!
 
 ---
 
-👨‍💻 Made by Sandesh Khatiwada 💻
+Made by Sandesh Khatiwada 💻
