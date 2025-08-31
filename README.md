@@ -16,17 +16,18 @@ Features:
 Project Structure: 
 ```
 NaagarikFeedback/
-├── backend/
+├── com.NaagarikFeedback.naagrikFeedback/
 │   ├── controller/                    → Admin, User, Public, and Feedback controllers
 │   ├── entity/                        → User and Feedback entities
 │   ├── repository/                    → Spring Data JPA repositories
 │   ├── service/                       → Services / business logic
 │   └── NaagarikFeedbackApplication/   → Main Spring Boot application
-├── frontend/
+├── resources/static/
 │   ├── index.html                     → Home page
 │   ├── edit-feedback.html             → Home page
 │   ├── add-feedback.html              → Home page
 │   └── feedback-list.html             → Styling and interactivity
+└────── application.properties
 ```
 Getting Started:
 
