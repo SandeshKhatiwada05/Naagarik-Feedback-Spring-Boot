@@ -12,6 +12,7 @@ Features:
 - Admins can view and manage feedback
 - Role-based access control (User/Admin)
 - REST API for frontend-backend interaction
+- Unit testing, Selenium testing
 
 Project Structure: 
 ```
