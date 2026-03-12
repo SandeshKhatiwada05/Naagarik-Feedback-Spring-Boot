@@ -53,12 +53,3 @@ Frontend Setup:
 <img width="1668" height="844" alt="Screenshot 2025-08-30 201412" src="https://github.com/user-attachments/assets/00ae6c58-8b16-4ec8-a052-d7cc11ce2268" />
 <img width="1376" height="854" alt="Screenshot 2025-08-30 201431" src="https://github.com/user-attachments/assets/9dcdf4db-3c9f-4b59-b929-57a314dd0e75" />
 
-
-
-
-Feedback & Contribution:
-If you'd like to suggest improvements or report bugs, feel free to open an issue or pull request!
-
----
-
-Made by Sandesh Khatiwada 💻
